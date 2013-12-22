@@ -885,7 +885,24 @@ void usb_lld_start(USBDriver *usbp) {
     otgp->PCGCCTL = 0;
 
     /* Internal FS PHY activation.*/
-    otgp->GCCFG = GCCFG_VBUSASEN | GCCFG_VBUSBSEN | GCCFG_PWRDWN;
+#if STM32_USB_USE_OTG1
+    if (&USBD1 == usbp) {
+#if STM32_USB_OTG1_NO_VSENSE
+        otgp->GCCFG = GCCFG_NOVBUSSENS | GCCFG_VBUSASEN | GCCFG_VBUSBSEN | GCCFG_PWRDWN;
+#else
+        otgp->GCCFG = GCCFG_VBUSASEN | GCCFG_VBUSBSEN | GCCFG_PWRDWN;
+#endif
+    }
+#endif
+#if STM32_USB_USE_OTG2
+    if (&USBD2 == usbp) {
+#if STM32_USB_OTG2_NO_VSENSE
+        otgp->GCCFG = GCCFG_NOVBUSSENS | GCCFG_VBUSASEN | GCCFG_VBUSBSEN | GCCFG_PWRDWN;
+#else
+        otgp->GCCFG = GCCFG_VBUSASEN | GCCFG_VBUSBSEN | GCCFG_PWRDWN;
+#endif
+    }
+#endif
 
     /* Soft core reset.*/
     otg_core_reset(usbp);
