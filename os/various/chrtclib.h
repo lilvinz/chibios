@@ -29,6 +29,8 @@
 #ifndef CHRTCLIB_H_
 #define CHRTCLIB_H_
 
+#if HAL_USE_RTC
+
 #include <time.h>
 
 /*===========================================================================*/
@@ -49,6 +51,8 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* HAL_USE_RTC */
 
 #endif /* CHRTCLIB_H_ */
 

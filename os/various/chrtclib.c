@@ -31,6 +31,8 @@
 #include "ch.h"
 #include "hal.h"
 
+#if HAL_USE_RTC
+
 #include "chrtclib.h"
 
 #if (defined(STM32F4XX) || defined(STM32F2XX) || defined(STM32L1XX) ||        \
@@ -356,5 +358,7 @@ uint32_t rtcGetTimeFatFromCounter(RTCDriver *rtcp) {
 }
 #endif /* STM32_RTC_IS_CALENDAR */
 #endif /* (defined(STM32F4XX) || defined(STM32F2XX) || defined(STM32L1XX) || defined(STM32F1XX)) */
+
+#endif /* HAL_USE_RTC */
 
 /** @} */
