@@ -31,14 +31,13 @@
 #include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_RTC
-
 #include "chrtclib.h"
 
-#if (defined(STM32F4XX) || defined(STM32F2XX) || defined(STM32L1XX) || \
-     defined(STM32F30X) || defined(STM32F37X) || \
-     defined(STM32F1XX) || defined(STM32F10X_MD) || defined(STM32F10X_LD) || \
-     defined(STM32F10X_HD) || defined(__DOXYGEN__))
+#if (defined(STM32F4XX) || defined(STM32F2XX) || defined(STM32L1XX) ||        \
+     defined(STM32F30X) || defined(STM32F37X) ||                              \
+     defined(STM32F1XX) || defined(STM32F10X_MD) || defined(STM32F10X_LD) ||  \
+     defined(STM32F10X_HD) || defined(STM32F0XX) || defined(LPC122X) ||       \
+     defined(__DOXYGEN__))
 #if STM32_RTC_IS_CALENDAR
 /**
  * @brief   Converts from STM32 BCD to canonicalized time format.
@@ -253,7 +252,7 @@ uint64_t rtcGetTimeUnixUsec(RTCDriver *rtcp) {
  * @api
  */
 void rtcGetTimeTm(RTCDriver *rtcp, struct tm *timp) {
-  RTCTime timespec = {0,0};
+  RTCTime timespec = {0};
 
   rtcGetTime(rtcp, &timespec);
   localtime_r((time_t *)&(timespec.tv_sec), timp);
@@ -268,10 +267,12 @@ void rtcGetTimeTm(RTCDriver *rtcp, struct tm *timp) {
  * @api
  */
 void rtcSetTimeTm(RTCDriver *rtcp, struct tm *timp) {
-  RTCTime timespec = {0,0};
+  RTCTime timespec = {0};
 
   timespec.tv_sec = mktime(timp);
+#if !defined(LPC122X)
   timespec.tv_msec = 0;
+#endif
   rtcSetTime(rtcp, &timespec);
 }
 
@@ -284,7 +285,7 @@ void rtcSetTimeTm(RTCDriver *rtcp, struct tm *timp) {
  * @api
  */
 time_t rtcGetTimeUnixSec(RTCDriver *rtcp) {
-  RTCTime timespec = {0,0};
+  RTCTime timespec = {0};
 
   rtcGetTime(rtcp, &timespec);
   return timespec.tv_sec;
@@ -300,10 +301,12 @@ time_t rtcGetTimeUnixSec(RTCDriver *rtcp) {
  * @api
  */
 void rtcSetTimeUnixSec(RTCDriver *rtcp, time_t tv_sec) {
-  RTCTime timespec = {0,0};
+  RTCTime timespec = {0};
 
   timespec.tv_sec = tv_sec;
+#if !defined(LPC122X)
   timespec.tv_msec = 0;
+#endif
   rtcSetTime(rtcp, &timespec);
 }
 
@@ -353,7 +356,5 @@ uint32_t rtcGetTimeFatFromCounter(RTCDriver *rtcp) {
 }
 #endif /* STM32_RTC_IS_CALENDAR */
 #endif /* (defined(STM32F4XX) || defined(STM32F2XX) || defined(STM32L1XX) || defined(STM32F1XX)) */
-
-#endif /* HAL_USE_RTC */
 
 /** @} */

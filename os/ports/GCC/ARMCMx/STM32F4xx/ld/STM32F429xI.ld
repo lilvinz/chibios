@@ -16,26 +16,18 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-                                      ---
-
-    A special exception to the GPL can be applied should you wish to distribute
-    a combined work that includes ChibiOS/RT, without being obliged to provide
-    the source code for any proprietary components. See the file exception.txt
-    for full details of how and when the exception can be applied.
 */
 
 /*
- * ST32F407xG memory setup.
+ * ST32F429xI memory setup.
  */
 __main_stack_size__     = 0x0400;
 __process_stack_size__  = 0x0400;
 
 MEMORY
 {
-    flash : org = 0x08000000, len = 1M
-    ram : org = 0x20000000, len = 112k
-    ethram : org = 0x2001C000, len = 16k
+    flash : org = 0x08000000, len = 2M
+    ram : org = 0x20000000, len = 192k
     ccmram : org = 0x10000000, len = 64k
 }
 
