@@ -25,6 +25,8 @@
 #ifndef _CHPRINTF_H_
 #define _CHPRINTF_H_
 
+#include "io_channel.h"
+
 #include <stdarg.h>
 
 /**
@@ -38,6 +40,7 @@
 extern "C" {
 #endif
   void chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap);
+  void chvprintft(BaseChannel *chp, systime_t timeout, const char *fmt, va_list ap);
   int chsnprintf(char *str, size_t size, const char *fmt, ...);
 #ifdef __cplusplus
 }
@@ -71,6 +74,38 @@ static inline void chprintf(BaseSequentialStream *chp, const char *fmt, ...) {
 
   va_start(ap, fmt);
   chvprintf(chp, fmt, ap);
+  va_end(ap);
+}
+
+/**
+ * @brief   System formatted output function with timeout.
+ * @details This function implements a minimal @p printf() like functionality
+ *          with output on a @p BaseChannel.
+ *          The general parameters format is: %[-][width|*][.precision|*][l|L]p.
+ *          The following parameter types (p) are supported:
+ *          - <b>x</b> hexadecimal integer.
+ *          - <b>X</b> hexadecimal long.
+ *          - <b>o</b> octal integer.
+ *          - <b>O</b> octal long.
+ *          - <b>d</b> decimal signed integer.
+ *          - <b>D</b> decimal signed long.
+ *          - <b>u</b> decimal unsigned integer.
+ *          - <b>U</b> decimal unsigned long.
+ *          - <b>c</b> character.
+ *          - <b>s</b> string.
+ *          .
+ *
+ * @param[in] chp       pointer to a @p BaseChannel implementing object
+ * @param[in] timeout   timeout specifier
+ * @param[in] fmt       formatting string
+ *
+ * @api
+ */
+static inline void chprintft(BaseChannel *chp, systime_t timeout, const char *fmt, ...) {
+  va_list ap;
+
+  va_start(ap, fmt);
+  chvprintft(chp, timeout, fmt, ap);
   va_end(ap);
 }
 
