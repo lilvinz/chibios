@@ -25,6 +25,9 @@
 #ifndef _CHPRINTF_H_
 #define _CHPRINTF_H_
 
+#include "ch.h"
+#include "io_channel.h"
+
 #include <stdarg.h>
 
 /**
