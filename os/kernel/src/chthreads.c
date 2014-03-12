@@ -289,12 +289,12 @@ void chThdTerminate(Thread *tp) {
  *
  * @api
  */
-void chThdSleep(systime_t time) {
+void chThdSleep(systime_t timeout) {
 
-  chDbgCheck(time != TIME_IMMEDIATE, "chThdSleep");
+  chDbgCheck(timeout != TIME_IMMEDIATE, "chThdSleep");
 
   chSysLock();
-  chThdSleepS(time);
+  chThdSleepS(timeout);
   chSysUnlock();
 }
 
@@ -306,11 +306,11 @@ void chThdSleep(systime_t time) {
  *
  * @api
  */
-void chThdSleepUntil(systime_t time) {
+void chThdSleepUntil(systime_t timeout) {
 
   chSysLock();
-  if ((time -= chTimeNow()) > 0)
-    chThdSleepS(time);
+  if ((timeout -= chTimeNow()) > 0)
+    chThdSleepS(timeout);
   chSysUnlock();
 }
 

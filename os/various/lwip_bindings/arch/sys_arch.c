@@ -98,18 +98,18 @@ void sys_sem_signal_S(sys_sem_t *sem) {
   chSchRescheduleS();
 }
 
-u32_t sys_arch_sem_wait(sys_sem_t *sem, u32_t timeout) {
-  systime_t time, tmo;
+u32_t sys_arch_sem_wait(sys_sem_t *sem, u32_t time_in) {
+  systime_t timeout, tmo;
 
   chSysLock();
   tmo = timeout > 0 ? (systime_t)timeout : TIME_INFINITE;
-  time = chTimeNow();
+  time_in = chTimeNow();
   if (chSemWaitTimeoutS(*sem, tmo) != RDY_OK)
-    time = SYS_ARCH_TIMEOUT;
+    time_in = SYS_ARCH_TIMEOUT;
   else
-    time = chTimeNow() - time;
+    time_in = chTimeNow() - time_in;
   chSysUnlock();
-  return time;
+  return time_in;
 }
 
 int sys_sem_valid(sys_sem_t *sem) {
@@ -164,18 +164,18 @@ err_t sys_mbox_trypost(sys_mbox_t *mbox, void *msg) {
   return ERR_OK;
 }
 
-u32_t sys_arch_mbox_fetch(sys_mbox_t *mbox, void **msg, u32_t timeout) {
-  systime_t time, tmo;
+u32_t sys_arch_mbox_fetch(sys_mbox_t *mbox, void **msg, u32_t time_in) {
+  systime_t timeout, tmo;
 
   chSysLock();
   tmo = timeout > 0 ? (systime_t)timeout : TIME_INFINITE;
-  time = chTimeNow();
+  time_in = chTimeNow();
   if (chMBFetchS(*mbox, (msg_t *)msg, tmo) != RDY_OK)
-    time = SYS_ARCH_TIMEOUT;
+    time_in = SYS_ARCH_TIMEOUT;
   else
-    time = chTimeNow() - time;
+    time_in = chTimeNow() - time_in;
   chSysUnlock();
-  return time;
+  return time_in;
 }
 
 u32_t sys_arch_mbox_tryfetch(sys_mbox_t *mbox, void **msg) {

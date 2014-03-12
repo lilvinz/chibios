@@ -67,13 +67,13 @@
  * @retval Q_RESET      if the queue has been reset.
  * @retval Q_TIMEOUT    if the queue operation timed out.
  */
-static msg_t qwait(GenericQueue *qp, systime_t time) {
+static msg_t qwait(GenericQueue *qp, systime_t timeout) {
 
-  if (TIME_IMMEDIATE == time)
+  if (TIME_IMMEDIATE == timeout)
     return Q_TIMEOUT;
   currp->p_u.wtobjp = qp;
   queue_insert(currp, &qp->q_waiting);
-  return chSchGoSleepTimeoutS(THD_STATE_WTQUEUE, time);
+  return chSchGoSleepTimeoutS(THD_STATE_WTQUEUE, timeout);
 }
 
 /**
@@ -175,7 +175,7 @@ msg_t chIQPutI(InputQueue *iqp, uint8_t b) {
  *
  * @api
  */
-msg_t chIQGetTimeout(InputQueue *iqp, systime_t time) {
+msg_t chIQGetTimeout(InputQueue *iqp, systime_t timeout) {
   uint8_t b;
 
   chSysLock();
@@ -184,7 +184,7 @@ msg_t chIQGetTimeout(InputQueue *iqp, systime_t time) {
 
   while (chIQIsEmptyI(iqp)) {
     msg_t msg;
-    if ((msg = qwait((GenericQueue *)iqp, time)) < Q_OK) {
+    if ((msg = qwait((GenericQueue *)iqp, timeout)) < Q_OK) {
       chSysUnlock();
       return msg;
     }
@@ -224,7 +224,7 @@ msg_t chIQGetTimeout(InputQueue *iqp, systime_t time) {
  * @api
  */
 size_t chIQReadTimeout(InputQueue *iqp, uint8_t *bp,
-                       size_t n, systime_t time) {
+                       size_t n, systime_t timeout) {
   qnotify_t nfy = iqp->q_notify;
   size_t r = 0;
 
@@ -236,7 +236,7 @@ size_t chIQReadTimeout(InputQueue *iqp, uint8_t *bp,
       nfy(iqp);
 
     while (chIQIsEmptyI(iqp)) {
-      if (qwait((GenericQueue *)iqp, time) != Q_OK) {
+      if (qwait((GenericQueue *)iqp, timeout) != Q_OK) {
         chSysUnlock();
         return r;
       }
@@ -326,13 +326,13 @@ void chOQResetI(OutputQueue *oqp) {
  *
  * @api
  */
-msg_t chOQPutTimeout(OutputQueue *oqp, uint8_t b, systime_t time) {
+msg_t chOQPutTimeout(OutputQueue *oqp, uint8_t b, systime_t timeout) {
 
   chSysLock();
   while (chOQIsFullI(oqp)) {
     msg_t msg;
 
-    if ((msg = qwait((GenericQueue *)oqp, time)) < Q_OK) {
+    if ((msg = qwait((GenericQueue *)oqp, timeout)) < Q_OK) {
       chSysUnlock();
       return msg;
     }
@@ -404,7 +404,7 @@ msg_t chOQGetI(OutputQueue *oqp) {
  * @api
  */
 size_t chOQWriteTimeout(OutputQueue *oqp, const uint8_t *bp,
-                        size_t n, systime_t time) {
+                        size_t n, systime_t timeout) {
   qnotify_t nfy = oqp->q_notify;
   size_t w = 0;
 
@@ -413,7 +413,7 @@ size_t chOQWriteTimeout(OutputQueue *oqp, const uint8_t *bp,
   chSysLock();
   while (TRUE) {
     while (chOQIsFullI(oqp)) {
-      if (qwait((GenericQueue *)oqp, time) != Q_OK) {
+      if (qwait((GenericQueue *)oqp, timeout) != Q_OK) {
         chSysUnlock();
         return w;
       }
