@@ -84,9 +84,9 @@ namespace chibios_rt {
   /*------------------------------------------------------------------------*
    * chibios_rt::Timer                                                      *
    *------------------------------------------------------------------------*/
-  void Timer::setI(systime_t time, vtfunc_t vtfunc, void *par) {
+  void Timer::setI(systime_t timeout, vtfunc_t vtfunc, void *par) {
 
-    chVTSetI(&timer_ref, time, vtfunc, par);
+    chVTSetI(&timer_ref, timeout, vtfunc, par);
   }
 
   void Timer::resetI() {
@@ -305,9 +305,9 @@ namespace chibios_rt {
     chThdSleep(interval);
   }
 
-  void BaseThread::sleepUntil(systime_t time) {
+  void BaseThread::sleepUntil(systime_t timeout) {
 
-    chThdSleepUntil(time);
+    chThdSleepUntil(timeout);
   }
 
   void BaseThread::yield(void) {
@@ -351,21 +351,21 @@ namespace chibios_rt {
 
 #if CH_USE_EVENTS_TIMEOUT
   eventmask_t BaseThread::waitOneEventTimeout(eventmask_t ewmask,
-                                              systime_t time) {
+                                              systime_t timeout) {
 
-    return chEvtWaitOneTimeout(ewmask, time);
+    return chEvtWaitOneTimeout(ewmask, timeout);
   }
 
   eventmask_t BaseThread::waitAnyEventTimeout(eventmask_t ewmask,
-                                              systime_t time) {
+                                              systime_t timeout) {
 
-    return chEvtWaitAnyTimeout(ewmask, time);
+    return chEvtWaitAnyTimeout(ewmask, timeout);
   }
 
   eventmask_t BaseThread::waitAllEventsTimeout(eventmask_t ewmask,
-                                               systime_t time) {
+                                               systime_t timeout) {
 
-    return chEvtWaitAllTimeout(ewmask, time);
+    return chEvtWaitAllTimeout(ewmask, timeout);
   }
 #endif /* CH_USE_EVENTS_TIMEOUT */
 
@@ -422,14 +422,14 @@ namespace chibios_rt {
     return chSemWaitS(&sem);
   }
 
-  msg_t CounterSemaphore::waitTimeout(systime_t time) {
+  msg_t CounterSemaphore::waitTimeout(systime_t timeout) {
 
-    return chSemWaitTimeout(&sem, time);
+    return chSemWaitTimeout(&sem, timeout);
   }
 
-  msg_t CounterSemaphore::waitTimeoutS(systime_t time) {
+  msg_t CounterSemaphore::waitTimeoutS(systime_t timeout) {
 
-    return chSemWaitTimeoutS(&sem, time);
+    return chSemWaitTimeoutS(&sem, timeout);
   }
 
   void CounterSemaphore::signal(void) {
@@ -478,14 +478,14 @@ namespace chibios_rt {
     return chBSemWaitS(&bsem);
   }
 
-  msg_t BinarySemaphore::waitTimeout(systime_t time) {
+  msg_t BinarySemaphore::waitTimeout(systime_t timeout) {
 
-    return chBSemWaitTimeout(&bsem, time);
+    return chBSemWaitTimeout(&bsem, timeout);
   }
 
-  msg_t BinarySemaphore::waitTimeoutS(systime_t time) {
+  msg_t BinarySemaphore::waitTimeoutS(systime_t timeout) {
 
-    return chBSemWaitTimeoutS(&bsem, time);
+    return chBSemWaitTimeoutS(&bsem, timeout);
   }
 
   void BinarySemaphore::reset(bool taken) {
@@ -583,9 +583,9 @@ namespace chibios_rt {
   }
 
 #if CH_USE_CONDVARS_TIMEOUT
-  msg_t CondVar::waitTimeout(systime_t time) {
+  msg_t CondVar::waitTimeout(systime_t timeout) {
 
-    return chCondWaitTimeout(&condvar, time);
+    return chCondWaitTimeout(&condvar, timeout);
   }
 #endif /* CH_USE_CONDVARS_TIMEOUT */
 #endif /* CH_USE_CONDVARS */
@@ -685,14 +685,14 @@ namespace chibios_rt {
     return chIQGet(&iq);
   }
 
-  msg_t InQueue::getTimeout(systime_t time) {
+  msg_t InQueue::getTimeout(systime_t timeout) {
 
-    return chIQGetTimeout(&iq, time);
+    return chIQGetTimeout(&iq, timeout);
   }
 
-  size_t InQueue::readTimeout(uint8_t *bp, size_t n, systime_t time) {
+  size_t InQueue::readTimeout(uint8_t *bp, size_t n, systime_t timeout) {
 
-    return chIQReadTimeout(&iq, bp, n, time);
+    return chIQReadTimeout(&iq, bp, n, timeout);
   }
 
   /*------------------------------------------------------------------------*
@@ -733,9 +733,9 @@ namespace chibios_rt {
     return chOQPut(&oq, b);
   }
 
-  msg_t OutQueue::putTimeout(uint8_t b, systime_t time) {
+  msg_t OutQueue::putTimeout(uint8_t b, systime_t timeout) {
 
-    return chOQPutTimeout(&oq, b, time);
+    return chOQPutTimeout(&oq, b, timeout);
   }
 
   msg_t OutQueue::getI(void) {
@@ -744,9 +744,9 @@ namespace chibios_rt {
   }
 
   size_t OutQueue::writeTimeout(const uint8_t *bp, size_t n,
-                                systime_t time) {
+                                systime_t timeout) {
 
-    return chOQWriteTimeout(&oq, bp, n, time);
+    return chOQWriteTimeout(&oq, bp, n, timeout);
   }
 #endif /* CH_USE_QUEUES */
 
@@ -764,14 +764,14 @@ namespace chibios_rt {
     chMBReset(&mb);
   }
 
-  msg_t Mailbox::post(msg_t msg, systime_t time) {
+  msg_t Mailbox::post(msg_t msg, systime_t timeout) {
 
-    return chMBPost(&mb, msg, time);
+    return chMBPost(&mb, msg, timeout);
   }
 
-  msg_t Mailbox::postS(msg_t msg, systime_t time) {
+  msg_t Mailbox::postS(msg_t msg, systime_t timeout) {
 
-    return chMBPostS(&mb, msg, time);
+    return chMBPostS(&mb, msg, timeout);
   }
 
   msg_t Mailbox::postI(msg_t msg) {
@@ -779,14 +779,14 @@ namespace chibios_rt {
     return chMBPostI(&mb, msg);
   }
 
-  msg_t Mailbox::postAhead(msg_t msg, systime_t time) {
+  msg_t Mailbox::postAhead(msg_t msg, systime_t timeout) {
 
-    return chMBPostAhead(&mb, msg, time);
+    return chMBPostAhead(&mb, msg, timeout);
   }
 
-  msg_t Mailbox::postAheadS(msg_t msg, systime_t time) {
+  msg_t Mailbox::postAheadS(msg_t msg, systime_t timeout) {
 
-    return chMBPostAheadS(&mb, msg, time);
+    return chMBPostAheadS(&mb, msg, timeout);
   }
 
   msg_t Mailbox::postAheadI(msg_t msg) {
@@ -794,14 +794,14 @@ namespace chibios_rt {
     return chMBPostAheadI(&mb, msg);
   }
 
-  msg_t Mailbox::fetch(msg_t *msgp, systime_t time) {
+  msg_t Mailbox::fetch(msg_t *msgp, systime_t timeout) {
 
-    return chMBFetch(&mb, msgp, time);
+    return chMBFetch(&mb, msgp, timeout);
   }
 
-  msg_t Mailbox::fetchS(msg_t *msgp, systime_t time) {
+  msg_t Mailbox::fetchS(msg_t *msgp, systime_t timeout) {
 
-    return chMBFetchS(&mb, msgp, time);
+    return chMBFetchS(&mb, msgp, timeout);
   }
 
   msg_t Mailbox::fetchI(msg_t *msgp) {
