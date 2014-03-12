@@ -66,8 +66,8 @@ extern "C" {
   msg_t chCondWait(CondVar *cp);
   msg_t chCondWaitS(CondVar *cp);
 #if CH_USE_CONDVARS_TIMEOUT
-  msg_t chCondWaitTimeout(CondVar *cp, systime_t time);
-  msg_t chCondWaitTimeoutS(CondVar *cp, systime_t time);
+  msg_t chCondWaitTimeout(CondVar *cp, systime_t timeout);
+  msg_t chCondWaitTimeoutS(CondVar *cp, systime_t timeout);
 #endif
 #ifdef __cplusplus
 }

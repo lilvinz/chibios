@@ -230,11 +230,11 @@ msg_t chCondWaitS(CondVar *cp) {
  *
  * @api
  */
-msg_t chCondWaitTimeout(CondVar *cp, systime_t time) {
+msg_t chCondWaitTimeout(CondVar *cp, systime_t timeout) {
   msg_t msg;
 
   chSysLock();
-  msg = chCondWaitTimeoutS(cp, time);
+  msg = chCondWaitTimeoutS(cp, timeout);
   chSysUnlock();
   return msg;
 }
@@ -267,12 +267,12 @@ msg_t chCondWaitTimeout(CondVar *cp, systime_t time) {
  *
  * @sclass
  */
-msg_t chCondWaitTimeoutS(CondVar *cp, systime_t time) {
+msg_t chCondWaitTimeoutS(CondVar *cp, systime_t timeout) {
   Mutex *mp;
   msg_t msg;
 
   chDbgCheckClassS();
-  chDbgCheck((cp != NULL) && (time != TIME_IMMEDIATE), "chCondWaitTimeoutS");
+  chDbgCheck((cp != NULL) && (timeout != TIME_IMMEDIATE), "chCondWaitTimeoutS");
   chDbgAssert(currp->p_mtxlist != NULL,
               "chCondWaitTimeoutS(), #1",
               "not owning a mutex");
@@ -280,7 +280,7 @@ msg_t chCondWaitTimeoutS(CondVar *cp, systime_t time) {
   mp = chMtxUnlockS();
   currp->p_u.wtobjp = cp;
   prio_insert(currp, &cp->c_queue);
-  msg = chSchGoSleepTimeoutS(THD_STATE_WTCOND, time);
+  msg = chSchGoSleepTimeoutS(THD_STATE_WTCOND, timeout);
   if (msg != RDY_TIMEOUT)
     chMtxLockS(mp);
   return msg;

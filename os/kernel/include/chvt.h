@@ -251,7 +251,7 @@ extern VTList vtlist;
 extern "C" {
 #endif
   void _vt_init(void);
-  void chVTSetI(VirtualTimer *vtp, systime_t time, vtfunc_t vtfunc, void *par);
+  void chVTSetI(VirtualTimer *vtp, systime_t timeout, vtfunc_t vtfunc, void *par);
   void chVTResetI(VirtualTimer *vtp);
 #ifdef __cplusplus
 }

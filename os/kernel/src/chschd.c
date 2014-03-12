@@ -186,14 +186,14 @@ static void wakeup(void *p) {
  *
  * @sclass
  */
-msg_t chSchGoSleepTimeoutS(tstate_t newstate, systime_t time) {
+msg_t chSchGoSleepTimeoutS(tstate_t newstate, systime_t timeout) {
 
   chDbgCheckClassS();
 
-  if (TIME_INFINITE != time) {
+  if (TIME_INFINITE != timeout) {
     VirtualTimer vt;
 
-    chVTSetI(&vt, time, wakeup, currp);
+    chVTSetI(&vt, timeout, wakeup, currp);
     chSchGoSleepS(newstate);
     if (chVTIsArmedI(&vt))
       chVTResetI(&vt);
