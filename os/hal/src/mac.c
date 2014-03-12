@@ -157,7 +157,7 @@ void macStop(MACDriver *macp) {
  */
 msg_t macWaitTransmitDescriptor(MACDriver *macp,
                                 MACTransmitDescriptor *tdp,
-                                systime_t time) {
+                                systime_t timeout) {
   msg_t msg;
   systime_t now;
 
@@ -166,15 +166,15 @@ msg_t macWaitTransmitDescriptor(MACDriver *macp,
               "not active");
 
   while (((msg = mac_lld_get_transmit_descriptor(macp, tdp)) != RDY_OK) &&
-         (time > 0)) {
+         (timeout > 0)) {
     chSysLock();
     now = chTimeNow();
-    if ((msg = chSemWaitTimeoutS(&macp->tdsem, time)) == RDY_TIMEOUT) {
+    if ((msg = chSemWaitTimeoutS(&macp->tdsem, timeout)) == RDY_TIMEOUT) {
       chSysUnlock();
       break;
     }
-    if (time != TIME_INFINITE)
-      time -= (chTimeNow() - now);
+    if (timeout != TIME_INFINITE)
+      timeout -= (chTimeNow() - now);
     chSysUnlock();
   }
   return msg;
@@ -216,7 +216,7 @@ void macReleaseTransmitDescriptor(MACTransmitDescriptor *tdp) {
  */
 msg_t macWaitReceiveDescriptor(MACDriver *macp,
                                MACReceiveDescriptor *rdp,
-                               systime_t time) {
+                               systime_t timeout) {
   msg_t msg;
   systime_t now;
 
@@ -225,15 +225,15 @@ msg_t macWaitReceiveDescriptor(MACDriver *macp,
               "not active");
 
   while (((msg = mac_lld_get_receive_descriptor(macp, rdp)) != RDY_OK) &&
-         (time > 0)) {
+         (timeout > 0)) {
     chSysLock();
     now = chTimeNow();
-    if ((msg = chSemWaitTimeoutS(&macp->rdsem, time)) == RDY_TIMEOUT) {
+    if ((msg = chSemWaitTimeoutS(&macp->rdsem, timeout)) == RDY_TIMEOUT) {
       chSysUnlock();
       break;
     }
-    if (time != TIME_INFINITE)
-      time -= (chTimeNow() - now);
+    if (timeout != TIME_INFINITE)
+      timeout -= (chTimeNow() - now);
     chSysUnlock();
   }
   return msg;

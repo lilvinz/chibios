@@ -191,9 +191,9 @@ extern "C" {
   eventmask_t chEvtWaitAll(eventmask_t mask);
 #endif
 #if CH_USE_EVENTS_TIMEOUT
-  eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t time);
-  eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t time);
-  eventmask_t chEvtWaitAllTimeout(eventmask_t mask, systime_t time);
+  eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t timeout);
+  eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t timeout);
+  eventmask_t chEvtWaitAllTimeout(eventmask_t mask, systime_t timeout);
 #endif
 #ifdef __cplusplus
 }
