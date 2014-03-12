@@ -55,8 +55,8 @@ extern "C" {
   void chSemResetI(Semaphore *sp, cnt_t n);
   msg_t chSemWait(Semaphore *sp);
   msg_t chSemWaitS(Semaphore *sp);
-  msg_t chSemWaitTimeout(Semaphore *sp, systime_t time);
-  msg_t chSemWaitTimeoutS(Semaphore *sp, systime_t time);
+  msg_t chSemWaitTimeout(Semaphore *sp, systime_t timeout);
+  msg_t chSemWaitTimeoutS(Semaphore *sp, systime_t timeout);
   void chSemSignal(Semaphore *sp);
   void chSemSignalI(Semaphore *sp);
   void chSemAddCounterI(Semaphore *sp, cnt_t n);
