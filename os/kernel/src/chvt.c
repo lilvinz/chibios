@@ -73,26 +73,26 @@ void _vt_init(void) {
  *
  * @iclass
  */
-void chVTSetI(VirtualTimer *vtp, systime_t time, vtfunc_t vtfunc, void *par) {
+void chVTSetI(VirtualTimer *vtp, systime_t timeout, vtfunc_t vtfunc, void *par) {
   VirtualTimer *p;
 
   chDbgCheckClassI();
-  chDbgCheck((vtp != NULL) && (vtfunc != NULL) && (time != TIME_IMMEDIATE),
+  chDbgCheck((vtp != NULL) && (vtfunc != NULL) && (timeout != TIME_IMMEDIATE),
              "chVTSetI");
 
   vtp->vt_par = par;
   vtp->vt_func = vtfunc;
   p = vtlist.vt_next;
-  while (p->vt_time < time) {
-    time -= p->vt_time;
+  while (p->vt_time < timeout) {
+	  timeout -= p->vt_time;
     p = p->vt_next;
   }
 
   vtp->vt_prev = (vtp->vt_next = p)->vt_prev;
   vtp->vt_prev->vt_next = p->vt_prev = vtp;
-  vtp->vt_time = time;
+  vtp->vt_time = timeout;
   if (p != (void *)&vtlist)
-    p->vt_time -= time;
+    p->vt_time -= timeout;
 }
 
 /**
