@@ -370,8 +370,8 @@ extern "C" {
   tprio_t chThdSetPriority(tprio_t newprio);
   Thread *chThdResume(Thread *tp);
   void chThdTerminate(Thread *tp);
-  void chThdSleep(systime_t time);
-  void chThdSleepUntil(systime_t time);
+  void chThdSleep(systime_t timeout);
+  void chThdSleepUntil(systime_t timeout);
   void chThdYield(void);
   void chThdExit(msg_t msg);
   void chThdExitS(msg_t msg);

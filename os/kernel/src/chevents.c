@@ -443,19 +443,19 @@ eventmask_t chEvtWaitAll(eventmask_t mask) {
  *
  * @api
  */
-eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t time) {
+eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t timeout) {
   Thread *ctp = currp;
   eventmask_t m;
 
   chSysLock();
 
   if ((m = (ctp->p_epending & mask)) == 0) {
-    if (TIME_IMMEDIATE == time) {
+    if (TIME_IMMEDIATE == timeout) {
       chSysUnlock();
       return (eventmask_t)0;
     }
     ctp->p_u.ewmask = mask;
-    if (chSchGoSleepTimeoutS(THD_STATE_WTOREVT, time) < RDY_OK) {
+    if (chSchGoSleepTimeoutS(THD_STATE_WTOREVT, timeout) < RDY_OK) {
       chSysUnlock();
       return (eventmask_t)0;
     }
@@ -486,19 +486,19 @@ eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t time) {
  *
  * @api
  */
-eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t time) {
+eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t timeout) {
   Thread *ctp = currp;
   eventmask_t m;
 
   chSysLock();
 
   if ((m = (ctp->p_epending & mask)) == 0) {
-    if (TIME_IMMEDIATE == time) {
+    if (TIME_IMMEDIATE == timeout) {
       chSysUnlock();
       return (eventmask_t)0;
     }
     ctp->p_u.ewmask = mask;
-    if (chSchGoSleepTimeoutS(THD_STATE_WTOREVT, time) < RDY_OK) {
+    if (chSchGoSleepTimeoutS(THD_STATE_WTOREVT, timeout) < RDY_OK) {
       chSysUnlock();
       return (eventmask_t)0;
     }
@@ -527,18 +527,18 @@ eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t time) {
  *
  * @api
  */
-eventmask_t chEvtWaitAllTimeout(eventmask_t mask, systime_t time) {
+eventmask_t chEvtWaitAllTimeout(eventmask_t mask, systime_t timeout) {
   Thread *ctp = currp;
 
   chSysLock();
 
   if ((ctp->p_epending & mask) != mask) {
-    if (TIME_IMMEDIATE == time) {
+    if (TIME_IMMEDIATE == timeout) {
       chSysUnlock();
       return (eventmask_t)0;
     }
     ctp->p_u.ewmask = mask;
-    if (chSchGoSleepTimeoutS(THD_STATE_WTANDEVT, time) < RDY_OK) {
+    if (chSchGoSleepTimeoutS(THD_STATE_WTANDEVT, timeout) < RDY_OK) {
       chSysUnlock();
       return (eventmask_t)0;
     }
