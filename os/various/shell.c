@@ -286,7 +286,12 @@ bool shellGetLine(BaseSequentialStream *chp, char *line, unsigned size) {
       }
       continue;
     }
-    if (c == '\r') {
+    if (c ==
+#if defined(PORT_ARCHITECTURE_SIMIA32)
+        '\n') {
+#else
+        '\r') {
+#endif
       chprintf(chp, "\r\n");
       *p = 0;
       return false;
