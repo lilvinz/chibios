@@ -21,7 +21,6 @@
  */
 
 #include <stdio.h>
-#include <errno.h>
 
 #include "ch.h"
 #include "hal.h"
@@ -48,108 +47,64 @@ static size_t write(void *ip, const uint8_t *bp, size_t n) {
   size_t ret;
 
   (void)ip;
-  do
-  {
-    ret = fwrite(bp, 1, n, stdout);
-    if (errno == EAGAIN || errno == EINTR)
-      chThdSleepMilliseconds(1);
-  } while (ret == 0 && errno == EAGAIN);
+  ret = fwrite(bp, 1, n, stdout);
   fflush(stdout);
   return ret;
 }
 
 static size_t read(void *ip, uint8_t *bp, size_t n) {
-  size_t ret;
 
   (void)ip;
-  do
-  {
-      ret = fread(bp, 1, n, stdin);
-      if (errno == EAGAIN || errno == EINTR)
-        chThdSleepMilliseconds(1);
-  } while (ret == 0 &&
-      (errno == EAGAIN || errno == EINTR));
-  return ret;
+  return fread(bp, 1, n, stdin);
 }
 
 static msg_t put(void *ip, uint8_t b) {
 
   (void)ip;
 
-  if (write(ip, &b, 1) == 1)
-    return RDY_OK;
-  else
-    return Q_RESET;
+  fputc(b, stdout);
+  fflush(stdout);
+  return RDY_OK;
 }
 
 static msg_t get(void *ip) {
 
   (void)ip;
-  uint8_t b;
 
-  if (read(ip, &b, 1) == 1)
-    return RDY_OK;
-  else
-    return Q_RESET;
+  return fgetc(stdin);
 }
 
-static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t timeout) {
+static msg_t putt(void *ip, uint8_t b, systime_t time) {
+
   (void)ip;
-
-  systime_t start = chTimeNow();
-  size_t ret;
-
-  do
-  {
-    if (chTimeElapsedSince(start) > timeout)
-      return Q_TIMEOUT;
-    ret = fwrite(bp, 1, n, stdout);
-    if (errno == EAGAIN || errno == EINTR)
-      chThdSleepMilliseconds(1);
-  } while (ret == 0 &&
-      (errno == EAGAIN || errno == EINTR));
-
+  (void)time;
+  fputc(b, stdout);
   fflush(stdout);
-
   return RDY_OK;
 }
 
-static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t timeout) {
-  (void)ip;
+static msg_t gett(void *ip, systime_t time) {
 
-  systime_t start = chTimeNow();
+  (void)ip;
+  (void)time;
+  return fgetc(stdin);
+}
+
+static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t time) {
   size_t ret;
 
-  do
-  {
-    if (chTimeElapsedSince(start) > timeout)
-      return Q_TIMEOUT;
-    ret = fread(bp, 1, n, stdin);
-    if (errno == EAGAIN || errno == EINTR)
-      chThdSleepMilliseconds(1);
-  } while (ret == 0 &&
-      (errno == EAGAIN || errno == EINTR));
-
+  (void)ip;
+  (void)time;
+  ret = fwrite(bp, 1, n, stdout);
+  fflush(stdout);
   return ret;
 }
 
-static msg_t putt(void *ip, uint8_t b, systime_t timeout) {
+static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t time) {
+
   (void)ip;
-
-  if (writet(ip, &b, 1, timeout) == 1)
-    return RDY_OK;
-  else
-    return Q_TIMEOUT;
-}
-
-static msg_t gett(void *ip, systime_t timeout) {
-  (void)ip;
-
-  uint8_t b;
-  if (readt(ip, &b, 1, timeout) == 1)
-    return b;
-  else
-    return Q_TIMEOUT;
+  (void)time;
+  return fread(bp, 1, n, stdin);
 }
 
 static const struct BaseChannelVMT vmt = {
