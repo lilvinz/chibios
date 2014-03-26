@@ -289,17 +289,16 @@ unsigned_common:
           chnPutTimeout(chp, (uint8_t)filler, timeout);
       while (++width != 0);
     }
-    while (--i >= 0)
-      if (timeout == TIME_INFINITE)
-      {
-        chSequentialStreamWrite((BaseSequentialStream*)chp, (uint8_t*)s, i);
-        s += i;
-      }
-      else
-      {
-        chnWriteTimeout(chp, (uint8_t*)s, i, timeout);
-        s += i;
-      }
+    if (timeout == TIME_INFINITE)
+    {
+      chSequentialStreamWrite((BaseSequentialStream*)chp, (uint8_t*)s, i);
+      s += i;
+    }
+    else
+    {
+      chnWriteTimeout(chp, (uint8_t*)s, i, timeout);
+      s += i;
+    }
     while (width) {
       if (timeout == TIME_INFINITE)
         chSequentialStreamPut((BaseSequentialStream*)chp, (uint8_t)filler);
