@@ -284,8 +284,8 @@ typedef msg_t (*tfunc_t)(void *);
  * @brief   Verifies if the current thread has a termination request pending.
  * @note    Can be invoked in any context.
  *
- * @retval TRUE         termination request pending.
- * @retval FALSE        termination request not pending.
+ * @retval 0            termination request not pending.
+ * @retval !0           termination request pending.
  *
  * @special
  */
@@ -370,8 +370,8 @@ extern "C" {
   tprio_t chThdSetPriority(tprio_t newprio);
   Thread *chThdResume(Thread *tp);
   void chThdTerminate(Thread *tp);
-  void chThdSleep(systime_t timeout);
-  void chThdSleepUntil(systime_t timeout);
+  void chThdSleep(systime_t time);
+  void chThdSleepUntil(systime_t time);
   void chThdYield(void);
   void chThdExit(msg_t msg);
   void chThdExitS(msg_t msg);

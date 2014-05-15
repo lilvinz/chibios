@@ -71,6 +71,34 @@
 *** Releases                                                              ***
 *****************************************************************************
 
+*** 2.6.4 ***
+- FIX: Fixed insufficient ISR-reserved stack in ARMCMx port when
+  optimizations are disabled (bug #494).
+- FIX: Fixed configuration descriptors larger than 127 bytes don't
+  work (bug #373).
+- FIX: Fixed invalid cast in PWM_FRACTION_TO_WIDTH() macro (bug #487).
+- FIX: Fixed wrong STM32 TIM9 clock source in PWM and ICU drivers (bug #486).
+- FIX: Fixed MMC_SPI driver block_addresses is not initialized after
+  reconnection (bug #485).
+- FIX: Fixed STM32L1 Plus Compilation Problems (bug #484).
+- FIX: Fixed OTG HS failure when WFI instruction is enabled (bug #482).
+- FIX: Fixed wrong STM32F4 TIM6 vector number symbol (bug #480).
+- FIX: Fixed problem in STM32 SDADC driver initialization (bug #479).
+- FIX: Fixed chThdShouldTerminate() documentation incorrect (bug #478).
+- FIX: Fixed spurious callback in STM32 EXT driver (bug #477).
+- FIX: Fixed several macro errors in STM32L1xx HAL driver (bug #476).
+- FIX: Fixed wrong STM32 RTCv2 alarms implementation (bug #475).
+- FIX: Fixed wrong ADC34 macros in STM32F30x HAL driver (bug #474).
+- FIX: Fixed wrong TIM1 and TIM8 macros in STM32F30x HAL driver (bug #473).
+- FIX: Fixed chprintf()/chSequentialStreamWrite() crash with size of 0
+  or NULL (bug #472).
+- FIX: Fixed simulated IO message is corrupted in simulator (bug #468).
+- FIX: Fixed typo in STMxx demo makefiles (bug #466).
+- FIX: Fixed wrong multilib handling in ChibiOS buildsystem (bug #465).
+- NEW: Improved makefiles backported from the 3.0 branch, make sure to use
+  Makefiles taken from this version in your projects.
+- CHANGE: Made optional the STM32 MAC DMABMR SR reset procedure.
+
 *** 2.6.3 ***
 - FIX: Fixed TM32 SDC driver clock activation issue (bug #464).
 - FIX: Fixed spurious callback in ICU driver (bug #461).

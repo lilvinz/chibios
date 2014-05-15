@@ -219,11 +219,11 @@ msg_t chSemWaitS(Semaphore *sp) {
  *
  * @api
  */
-msg_t chSemWaitTimeout(Semaphore *sp, systime_t timeout) {
+msg_t chSemWaitTimeout(Semaphore *sp, systime_t time) {
   msg_t msg;
 
   chSysLock();
-  msg = chSemWaitTimeoutS(sp, timeout);
+  msg = chSemWaitTimeoutS(sp, time);
   chSysUnlock();
   return msg;
 }
@@ -247,7 +247,7 @@ msg_t chSemWaitTimeout(Semaphore *sp, systime_t timeout) {
  *
  * @sclass
  */
-msg_t chSemWaitTimeoutS(Semaphore *sp, systime_t timeout) {
+msg_t chSemWaitTimeoutS(Semaphore *sp, systime_t time) {
 
   chDbgCheckClassS();
   chDbgCheck(sp != NULL, "chSemWaitTimeoutS");
@@ -257,13 +257,13 @@ msg_t chSemWaitTimeoutS(Semaphore *sp, systime_t timeout) {
               "inconsistent semaphore");
 
   if (--sp->s_cnt < 0) {
-    if (TIME_IMMEDIATE == timeout) {
+    if (TIME_IMMEDIATE == time) {
       sp->s_cnt++;
       return RDY_TIMEOUT;
     }
     currp->p_u.wtobjp = sp;
     sem_insert(currp, &sp->s_queue);
-    return chSchGoSleepTimeoutS(THD_STATE_WTSEM, timeout);
+    return chSchGoSleepTimeoutS(THD_STATE_WTSEM, time);
   }
   return RDY_OK;
 }

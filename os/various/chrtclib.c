@@ -31,9 +31,9 @@
 #include "ch.h"
 #include "hal.h"
 
-#if HAL_USE_RTC
-
 #include "chrtclib.h"
+
+#if HAL_USE_RTC || defined(__DOXYGEN__)
 
 #if (defined(STM32F4XX) || defined(STM32F2XX) || defined(STM32L1XX) ||        \
      defined(STM32F30X) || defined(STM32F37X) ||                              \

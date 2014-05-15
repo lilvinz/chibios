@@ -29,9 +29,9 @@
 #ifndef CHRTCLIB_H_
 #define CHRTCLIB_H_
 
-#if HAL_USE_RTC
-
 #include <time.h>
+
+#if HAL_USE_RTC || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* External declarations.                                                    */

@@ -15,15 +15,15 @@
 */
 
 /*
- * ST32F100xB memory setup.
+ * ST32F401xC memory setup.
  */
 __main_stack_size__     = 0x0400;
 __process_stack_size__  = 0x0400;
 
 MEMORY
 {
-    flash : org = 0x08000000, len = 128k
-    ram : org = 0x20000000, len = 8k
+    flash : org = 0x08000000, len = 256k
+    ram : org = 0x20000000, len = 64k
 }
 
 __ram_start__           = ORIGIN(ram);
