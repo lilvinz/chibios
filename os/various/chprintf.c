@@ -109,7 +109,37 @@ static char *ftoa(char *p, double num) {
  *
  * @api
  */
-void chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap) {
+void chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap)
+{
+    chvprintft((BaseChannel*)chp, TIME_INFINITE, fmt, ap);
+}
+
+/**
+ * @brief   System formatted output function with timeout.
+ * @details This function implements a minimal @p vprintf()-like functionality
+ *          with output on a @p BaseChannel.
+ *          The general parameters format is: %[-][width|*][.precision|*][l|L]p.
+ *          The following parameter types (p) are supported:
+ *          - <b>x</b> hexadecimal integer.
+ *          - <b>X</b> hexadecimal long.
+ *          - <b>o</b> octal integer.
+ *          - <b>O</b> octal long.
+ *          - <b>d</b> decimal signed integer.
+ *          - <b>D</b> decimal signed long.
+ *          - <b>u</b> decimal unsigned integer.
+ *          - <b>U</b> decimal unsigned long.
+ *          - <b>c</b> character.
+ *          - <b>s</b> string.
+ *          .
+ *
+ * @param[in] chp       pointer to a @p BaseChannel implementing object
+ * @param[in] timeout   timeout specifier
+ * @param[in] fmt       formatting string
+ * @param[in] ap        list of parameters
+ *
+ * @api
+ */
+void chvprintft(BaseChannel *chp, systime_t timeout, const char *fmt, va_list ap) {
   char *p, *s, c, filler;
   int i, precision, width;
   bool_t is_long, left_align;
@@ -126,7 +156,10 @@ void chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap) {
     if (c == 0)
       return;
     if (c != '%') {
-      chSequentialStreamPut(chp, (uint8_t)c);
+      if (timeout == TIME_INFINITE)
+        chSequentialStreamPut((BaseSequentialStream*)chp, (uint8_t)c);
+      else
+        chnPutTimeout(chp, (uint8_t)c, timeout);
       continue;
     }
     p = tmpbuf;
@@ -243,18 +276,34 @@ unsigned_common:
       width = -width;
     if (width < 0) {
       if (*s == '-' && filler == '0') {
-        chSequentialStreamPut(chp, (uint8_t)*s++);
+        if (timeout == TIME_INFINITE)
+          chSequentialStreamPut((BaseSequentialStream*)chp, (uint8_t)*s++);
+        else
+          chnPutTimeout(chp, (uint8_t)*s++, timeout);
         i--;
       }
-      do {
-        chSequentialStreamPut(chp, (uint8_t)filler);
-      } while (++width != 0);
+      do
+        if (timeout == TIME_INFINITE)
+          chSequentialStreamPut((BaseSequentialStream*)chp, (uint8_t)filler);
+        else
+          chnPutTimeout(chp, (uint8_t)filler, timeout);
+      while (++width != 0);
     }
-    while (--i >= 0)
-      chSequentialStreamPut(chp, (uint8_t)*s++);
-
+    if (timeout == TIME_INFINITE)
+    {
+      chSequentialStreamWrite((BaseSequentialStream*)chp, (uint8_t*)s, i);
+      s += i;
+    }
+    else
+    {
+      chnWriteTimeout(chp, (uint8_t*)s, i, timeout);
+      s += i;
+    }
     while (width) {
-      chSequentialStreamPut(chp, (uint8_t)filler);
+      if (timeout == TIME_INFINITE)
+        chSequentialStreamPut((BaseSequentialStream*)chp, (uint8_t)filler);
+      else
+        chnPutTimeout(chp, (uint8_t)filler, timeout);
       width--;
     }
   }
