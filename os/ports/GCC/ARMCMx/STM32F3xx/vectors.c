@@ -170,7 +170,7 @@ extern void Vector184(void);
  * @brief   STM32 vectors table.
  */
 #if !defined(__DOXYGEN__)
-__attribute__ ((section("vectors")))
+__attribute__ ((used, section("vectors")))
 #endif
 vectors_t _vectors = {
   &__main_stack_end__,ResetHandler,       NMIVector,          HardFaultVector,
