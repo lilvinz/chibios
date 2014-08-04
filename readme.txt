@@ -71,6 +71,35 @@
 *** Releases                                                              ***
 *****************************************************************************
 
+*** 2.6.6 ***
+- FIX: Fixed failure to compile EXT driver on STM32F401 (bug #517).
+- FIX: Fixed wrong DMA channels for STM32L1 I2C1 unit (bug #516).
+- FIX: Fixed EXT driver compile error on STM32F030 (bug #514).
+
+*** 2.6.5 ***
+- FIX: Fixed race condition in Cortex-M4 port with FPU and fast interrupts
+  (bug #513).
+- FIX: Fixed STM32F1xx warning in stm32_dma.c (bug #512).
+- FIX: Fixed invalid checks in canSTM32SetFilters() function (bug #511).
+- FIX: Fixed missing check when disabling STM32F1 shared DMA IRQs (bug #510).
+- FIX: Fixed STM32L1 Medium Density Plus RTC Subseconds (bug #509).
+- FIX: Fixed stm32 CCM .ld file needs NOLOAD (bug #506).
+- FIX: Fixed dereference possibly null pointer before checking for nulliness
+  in STM32 RTCv2 driver (bug #505).
+- FIX: Fixed race condition in STM32 (F1, F2, F4, L1) serial driver
+  implementation (bug #503).
+- FIX: Fixed missing make dependencies for asm files (bug #501).
+- FIX: STM32L1 Plus Clock and I2C (bug #495).
+- NEW: Added support for STMicroelectronics STEVAL-MKI121V1 also known as
+  INEMO-M1 Discovery board. A simple demo application using USB has been
+  added.
+- NEW: Added support for STMicroelectronics NUCLEO-F103RB board.
+- NEW: Added support for STMicroelectronics NUCLEO-F401RE board.
+- NEW: Added support for STMicroelectronics NUCLEO-F030R8 board.
+- NEW: Added support for STMicroelectronics NUCLEO-L152RE board (not tested
+  because lack of support in OpenOCD).
+- CHANGE: Made mii_read() and mii_write() public in the STM32 MAC driver.
+
 *** 2.6.4 ***
 - FIX: Fixed insufficient ISR-reserved stack in ARMCMx port when
   optimizations are disabled (bug #494).
