@@ -14,6 +14,18 @@
     limitations under the License.
 */
 
+/*
+ * ST32F030x8 memory setup.
+ */
+__main_stack_size__     = 0x0400;
+__process_stack_size__  = 0x0400;
+
+MEMORY
+{
+    flash : org = 0x08000000, len = 64k
+    ram : org = 0x20000000, len = 8k
+}
+
 __ram_start__           = ORIGIN(ram);
 __ram_size__            = LENGTH(ram);
 __ram_end__             = __ram_start__ + __ram_size__;
@@ -28,11 +40,6 @@ SECTIONS
     startup : ALIGN(16) SUBALIGN(16)
     {
         KEEP(*(vectors))
-    } > flash
-    
-    imageinformation :
-    {
-        KEEP(*(.image_information))
     } > flash
 
     constructors : ALIGN(4) SUBALIGN(4)
@@ -49,13 +56,6 @@ SECTIONS
         KEEP(*(.fini_array))
         KEEP(*(SORT(.fini_array.*)))
         PROVIDE(__fini_array_end = .);
-    } > flash
-
-    .initcall : ALIGN(4)
-    {
-        __module_initcall_start = .;
-        KEEP(*(SORT(.initcall.*)))
-        __module_initcall_end = .;
     } > flash
 
     .text : ALIGN(16) SUBALIGN(16)
@@ -113,32 +113,7 @@ SECTIONS
         . = ALIGN(8);
         __process_stack_end__ = .;
         __main_thread_stack_end__ = .;
-    } > ccmram
-
-    .ccm (NOLOAD):
-    {
-        PROVIDE(_cmm_start = .);
-        . = ALIGN(4);
-        *(.ccm)
-        . = ALIGN(4);
-        *(.ccm.*)
-        . = ALIGN(4);
-        *(.bss.mainthread.*)
-        . = ALIGN(4);
-        *(.bss._idle_thread_wa)
-        . = ALIGN(4);
-        *(.bss.rlist)
-        . = ALIGN(4);
-        *(.bss.vtlist)
-        . = ALIGN(4);
-        *(.bss.endmem)
-        . = ALIGN(4);
-        *(.bss.nextmem)
-        . = ALIGN(4);
-        *(.bss.default_heap)
-        . = ALIGN(4);
-        PROVIDE(_cmm_end = .);
-    } > ccmram
+    } > ram
 
     .data :
     {

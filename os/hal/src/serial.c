@@ -91,14 +91,14 @@ static msg_t gett(void *ip, systime_t timeout) {
   return chIQGetTimeout(&((SerialDriver *)ip)->iqueue, timeout);
 }
 
-static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t timeout) {
+static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t time) {
 
-  return chOQWriteTimeout(&((SerialDriver *)ip)->oqueue, bp, n, timeout);
+  return chOQWriteTimeout(&((SerialDriver *)ip)->oqueue, bp, n, time);
 }
 
-static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t timeout) {
+static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t time) {
 
-  return chIQReadTimeout(&((SerialDriver *)ip)->iqueue, bp, n, timeout);
+  return chIQReadTimeout(&((SerialDriver *)ip)->iqueue, bp, n, time);
 }
 
 static const struct SerialDriverVMT vmt = {
@@ -166,7 +166,6 @@ void sdStart(SerialDriver *sdp, const SerialConfig *config) {
               "invalid state");
   sd_lld_start(sdp, config);
   sdp->state = SD_READY;
-  chnAddFlagsI(sdp, CHN_CONNECTED);
   chSysUnlock();
 }
 
@@ -187,7 +186,6 @@ void sdStop(SerialDriver *sdp) {
   chDbgAssert((sdp->state == SD_STOP) || (sdp->state == SD_READY),
               "sdStop(), #1",
               "invalid state");
-  chnAddFlagsI(sdp, CHN_DISCONNECTED);
   sd_lld_stop(sdp);
   sdp->state = SD_STOP;
   chOQResetI(&sdp->oqueue);

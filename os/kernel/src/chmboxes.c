@@ -119,11 +119,11 @@ void chMBReset(Mailbox *mbp) {
  *
  * @api
  */
-msg_t chMBPost(Mailbox *mbp, msg_t msg, systime_t timeout) {
+msg_t chMBPost(Mailbox *mbp, msg_t msg, systime_t time) {
   msg_t rdymsg;
 
   chSysLock();
-  rdymsg = chMBPostS(mbp, msg, timeout);
+  rdymsg = chMBPostS(mbp, msg, time);
   chSysUnlock();
   return rdymsg;
 }
@@ -147,13 +147,13 @@ msg_t chMBPost(Mailbox *mbp, msg_t msg, systime_t timeout) {
  *
  * @sclass
  */
-msg_t chMBPostS(Mailbox *mbp, msg_t msg, systime_t timeout) {
+msg_t chMBPostS(Mailbox *mbp, msg_t msg, systime_t time) {
   msg_t rdymsg;
 
   chDbgCheckClassS();
   chDbgCheck(mbp != NULL, "chMBPostS");
 
-  rdymsg = chSemWaitTimeoutS(&mbp->mb_emptysem, timeout);
+  rdymsg = chSemWaitTimeoutS(&mbp->mb_emptysem, time);
   if (rdymsg == RDY_OK) {
     *mbp->mb_wrptr++ = msg;
     if (mbp->mb_wrptr >= mbp->mb_top)
@@ -212,11 +212,11 @@ msg_t chMBPostI(Mailbox *mbp, msg_t msg) {
  *
  * @api
  */
-msg_t chMBPostAhead(Mailbox *mbp, msg_t msg, systime_t timeout) {
+msg_t chMBPostAhead(Mailbox *mbp, msg_t msg, systime_t time) {
   msg_t rdymsg;
 
   chSysLock();
-  rdymsg = chMBPostAheadS(mbp, msg, timeout);
+  rdymsg = chMBPostAheadS(mbp, msg, time);
   chSysUnlock();
   return rdymsg;
 }
@@ -240,13 +240,13 @@ msg_t chMBPostAhead(Mailbox *mbp, msg_t msg, systime_t timeout) {
  *
  * @sclass
  */
-msg_t chMBPostAheadS(Mailbox *mbp, msg_t msg, systime_t timeout) {
+msg_t chMBPostAheadS(Mailbox *mbp, msg_t msg, systime_t time) {
   msg_t rdymsg;
 
   chDbgCheckClassS();
   chDbgCheck(mbp != NULL, "chMBPostAheadS");
 
-  rdymsg = chSemWaitTimeoutS(&mbp->mb_emptysem, timeout);
+  rdymsg = chSemWaitTimeoutS(&mbp->mb_emptysem, time);
   if (rdymsg == RDY_OK) {
     if (--mbp->mb_rdptr < mbp->mb_buffer)
       mbp->mb_rdptr = mbp->mb_top - 1;
@@ -305,11 +305,11 @@ msg_t chMBPostAheadI(Mailbox *mbp, msg_t msg) {
  *
  * @api
  */
-msg_t chMBFetch(Mailbox *mbp, msg_t *msgp, systime_t timeout) {
+msg_t chMBFetch(Mailbox *mbp, msg_t *msgp, systime_t time) {
   msg_t rdymsg;
 
   chSysLock();
-  rdymsg = chMBFetchS(mbp, msgp, timeout);
+  rdymsg = chMBFetchS(mbp, msgp, time);
   chSysUnlock();
   return rdymsg;
 }
@@ -333,13 +333,13 @@ msg_t chMBFetch(Mailbox *mbp, msg_t *msgp, systime_t timeout) {
  *
  * @sclass
  */
-msg_t chMBFetchS(Mailbox *mbp, msg_t *msgp, systime_t timeout) {
+msg_t chMBFetchS(Mailbox *mbp, msg_t *msgp, systime_t time) {
   msg_t rdymsg;
 
   chDbgCheckClassS();
   chDbgCheck((mbp != NULL) && (msgp != NULL), "chMBFetchS");
 
-  rdymsg = chSemWaitTimeoutS(&mbp->mb_fullsem, timeout);
+  rdymsg = chSemWaitTimeoutS(&mbp->mb_fullsem, time);
   if (rdymsg == RDY_OK) {
     *msgp = *mbp->mb_rdptr++;
     if (mbp->mb_rdptr >= mbp->mb_top)

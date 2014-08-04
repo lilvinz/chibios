@@ -147,7 +147,7 @@ extern "C" {
   void chSchGoSleepS(tstate_t newstate);
 #endif
 #if !defined(PORT_OPTIMIZED_GOSLEEPTIMEOUTS)
-  msg_t chSchGoSleepTimeoutS(tstate_t newstate, systime_t timeout);
+  msg_t chSchGoSleepTimeoutS(tstate_t newstate, systime_t time);
 #endif
 #if !defined(PORT_OPTIMIZED_WAKEUPS)
   void chSchWakeupS(Thread *tp, msg_t msg);

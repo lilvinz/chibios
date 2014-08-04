@@ -21,7 +21,6 @@
  */
 
 #include <stdio.h>
-#include <errno.h>
 
 #include "ch.h"
 #include "hal.h"
@@ -46,119 +45,66 @@ BaseChannel CD1;
 
 static size_t write(void *ip, const uint8_t *bp, size_t n) {
   size_t ret;
-  int error;
 
   (void)ip;
-  do
-  {
-    ret = fwrite(bp, 1, n, stdout);
-    error = errno;
-    if (error == EAGAIN || error == EINTR)
-      chThdSleepMilliseconds(1);
-  } while (ret == 0 && error == EAGAIN);
+  ret = fwrite(bp, 1, n, stdout);
   fflush(stdout);
   return ret;
 }
 
 static size_t read(void *ip, uint8_t *bp, size_t n) {
-  size_t ret;
-  int error;
 
   (void)ip;
-
-  do
-  {
-      ret = fread(bp, 1, n, stdin);
-      error = errno;
-      if (error == EAGAIN || error == EINTR)
-        chThdSleepMilliseconds(1);
-  } while (ret == 0 &&
-      (error == EAGAIN || error == EINTR));
-  return ret;
+  return fread(bp, 1, n, stdin);
 }
 
 static msg_t put(void *ip, uint8_t b) {
 
   (void)ip;
 
-  if (write(ip, &b, 1) == 1)
-    return RDY_OK;
-  else
-    return Q_RESET;
+  fputc(b, stdout);
+  fflush(stdout);
+  return RDY_OK;
 }
 
 static msg_t get(void *ip) {
 
   (void)ip;
-  uint8_t b;
 
-  if (read(ip, &b, 1) == 1)
-    return RDY_OK;
-  else
-    return Q_RESET;
-}
-
-static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t timeout) {
-  (void)ip;
-
-  systime_t start = chTimeNow();
-  size_t ret;
-  int error;
-
-  do
-  {
-    if (chTimeElapsedSince(start) > timeout)
-      return Q_TIMEOUT;
-    ret = fwrite(bp, 1, n, stdout);
-    error = errno;
-    if (error == EAGAIN || error == EINTR)
-      chThdSleepMilliseconds(1);
-  } while (ret == 0 &&
-      (error == EAGAIN || error == EINTR));
-
-  fflush(stdout);
-
-  return RDY_OK;
-}
-
-static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t timeout) {
-  (void)ip;
-
-  systime_t start = chTimeNow();
-  size_t ret;
-  int error;
-
-  do
-  {
-    if (chTimeElapsedSince(start) > timeout)
-      return Q_TIMEOUT;
-    ret = fread(bp, 1, n, stdin);
-    error = errno;
-    if (error == EAGAIN || error == EINTR)
-      chThdSleepMilliseconds(1);
-  } while (ret == 0 &&
-      (error == EAGAIN || error == EINTR));
-
-  return ret;
+  return fgetc(stdin);
 }
 
 static msg_t putt(void *ip, uint8_t b, systime_t timeout) {
-  (void)ip;
 
-  if (writet(ip, &b, 1, timeout) == 1)
-    return RDY_OK;
-  else
-    return Q_TIMEOUT;
+  (void)ip;
+  (void)timeout;
+  fputc(b, stdout);
+  fflush(stdout);
+  return RDY_OK;
 }
 
 static msg_t gett(void *ip, systime_t timeout) {
-  (void)ip;
 
-  uint8_t b;
-  if (readt(ip, &b, 1, timeout) == 1)
-    return b;
-  else
-    return Q_TIMEOUT;
+  (void)ip;
+  (void)timeout;
+  return fgetc(stdin);
+}
+
+static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t timeout) {
+  size_t ret;
+
+  (void)ip;
+  (void)timeout;
+  ret = fwrite(bp, 1, n, stdout);
+  fflush(stdout);
+  return ret;
+}
+
+static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t timeout) {
+
+  (void)ip;
+  (void)timeout;
+  return fread(bp, 1, n, stdin);
 }
 
 static const struct BaseChannelVMT vmt = {
