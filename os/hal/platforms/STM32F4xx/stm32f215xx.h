@@ -8,7 +8,7 @@
   *          This file contains :  
   *           - Data structures and the address mapping for all peripherals
   *           - Peripheral's registers declarations and bits definition
-  *           - Macros to access peripheral’s registers hardware
+  *           - Macros to access peripheralï¿½s registers hardware
   *  
   ******************************************************************************
   * @attention
@@ -177,7 +177,8 @@ typedef enum
   */
 
 #include "core_cm3.h"
-#include "system_stm32f2xx.h"
+/* CHIBIOS FIX */
+//#include "system_stm32f2xx.h"
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures
@@ -443,6 +444,8 @@ typedef struct
   * @brief General Purpose I/O
   */
 
+/* CHIBIOS FIX */
+#if 0
 typedef struct
 {
   __IO uint32_t MODER;    /*!< GPIO port mode register,               Address offset: 0x00      */
@@ -456,6 +459,7 @@ typedef struct
   __IO uint32_t LCKR;     /*!< GPIO port configuration lock register, Address offset: 0x1C      */
   __IO uint32_t AFR[2];   /*!< GPIO alternate function registers,     Address offset: 0x20-0x24 */
 } GPIO_TypeDef;
+#endif
 
 /** 
   * @brief System configuration controller
@@ -4802,7 +4806,9 @@ USB_OTG_HostChannelTypeDef;
 #define  RCC_AHB1RSTR_CRCRST                 ((uint32_t)0x00001000)
 #define  RCC_AHB1RSTR_DMA1RST                ((uint32_t)0x00200000)
 #define  RCC_AHB1RSTR_DMA2RST                ((uint32_t)0x00400000)
-#define  RCC_AHB1RSTR_OTGHRST                ((uint32_t)0x10000000)
+/* CHIBIOS FIX */
+//#define  RCC_AHB1RSTR_OTGHRST                ((uint32_t)0x10000000)
+#define  RCC_AHB1RSTR_OTGHSRST               ((uint32_t)0x10000000)
 
 /********************  Bit definition for RCC_AHB2RSTR register  **************/
 #define  RCC_AHB2RSTR_CRYPRST                ((uint32_t)0x00000010)
