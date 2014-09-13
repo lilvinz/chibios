@@ -111,12 +111,16 @@
 
 #if defined(STM32F205xx)
   #include "stm32f205xx.h"
+  #define STM32F2XX
 #elif defined(STM32F215xx)
   #include "stm32f215xx.h"
+  #define STM32F2XX
 #elif defined(STM32F207xx)
   #include "stm32f207xx.h"
+  #define STM32F2XX
 #elif defined(STM32F217xx)
   #include "stm32f217xx.h"
+  #define STM32F2XX
 #else
  #error "Please select first the target STM32F2xx device used in your application (in stm32f2xx.h file)"
 #endif

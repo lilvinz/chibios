@@ -120,26 +120,37 @@
 
 #if defined(STM32F405xx)
   #include "stm32f405xx.h"
+  #define STM32F40_41xxx
 #elif defined(STM32F415xx)
   #include "stm32f415xx.h"
+  #define STM32F40_41xxx
 #elif defined(STM32F407xx)
   #include "stm32f407xx.h"
+  #define STM32F40_41xxx
 #elif defined(STM32F417xx)
   #include "stm32f417xx.h"
+  #define STM32F40_41xxx
 #elif defined(STM32F427xx)
   #include "stm32f427xx.h"
+  #define STM32F427_437xx
 #elif defined(STM32F437xx)
   #include "stm32f437xx.h"
+  #define STM32F427_437xx
 #elif defined(STM32F429xx)
   #include "stm32f429xx.h"
+  #define STM32F429_439xx
 #elif defined(STM32F439xx)
   #include "stm32f439xx.h"
+  #define STM32F429_439xx
 #elif defined(STM32F401xC)
   #include "stm32f401xc.h"
+  #define STM32F401xx
 #elif defined(STM32F401xE)
   #include "stm32f401xe.h"
+  #define STM32F401xx
 #elif defined(STM32F411xE)
   #include "stm32f411xe.h"
+  #define STM32F411xx
 #else
  #error "Please select first the target STM32F4xx device used in your application (in stm32f4xx.h file)"
 #endif
