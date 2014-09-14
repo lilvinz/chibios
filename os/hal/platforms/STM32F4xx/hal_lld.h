@@ -71,6 +71,10 @@
 #define PLATFORM_NAME           "STM32F401 High Performance with DSP and FPU"
 #define STM32F4XX
 
+#elif defined(STM32F411xx)
+#define PLATFORM_NAME           "STM32F411 High Performance with DSP and FPU"
+#define STM32F4XX
+
 #elif defined(STM32F2XX)
 #define PLATFORM_NAME           "STM32F2xx High Performance"
 
@@ -209,7 +213,27 @@
 #define STM32_PCLK1_MAX         42000000
 #define STM32_PCLK2_MAX         84000000
 #define STM32_SPII2S_MAX        42000000
-#endif /* STM32F40_41xxx */
+#endif /* STM32F401xx */
+
+#if defined(STM32F411xx) || defined(__DOXYGEN__)
+#define STM32_SYSCLK_MAX        100000000
+#define STM32_HSECLK_MAX        26000000
+#define STM32_HSECLK_BYP_MAX    50000000
+#define STM32_HSECLK_MIN        4000000
+#define STM32_HSECLK_BYP_MIN    1000000
+#define STM32_LSECLK_MAX        32768
+#define STM32_LSECLK_BYP_MAX    1000000
+#define STM32_LSECLK_MIN        32768
+#define STM32_PLLIN_MAX         2100000
+#define STM32_PLLIN_MIN         950000
+#define STM32_PLLVCO_MAX        432000000
+#define STM32_PLLVCO_MIN        192000000
+#define STM32_PLLOUT_MAX        100000000
+#define STM32_PLLOUT_MIN        24000000
+#define STM32_PCLK1_MAX         50000000
+#define STM32_PCLK2_MAX         100000000
+#define STM32_SPII2S_MAX        50000000
+#endif /* STM32F411xx*/
 
 #if defined(STM32F2XX)
 #define STM32_SYSCLK_MAX        120000000
@@ -262,11 +286,11 @@
  * @name    RCC_PLLCFGR register bits definitions
  * @{
  */
-#define STM32_PLLP_MASK			(3 << 16)	/**< PLLP mask.                 */
-#define STM32_PLLP_DIV2			(0 << 16)	/**< PLL clock divided by 2.    */
-#define STM32_PLLP_DIV4			(1 << 16)	/**< PLL clock divided by 4.    */
-#define STM32_PLLP_DIV6			(2 << 16)   /**< PLL clock divided by 6.    */
-#define STM32_PLLP_DIV8			(3 << 16)   /**< PLL clock divided by 8.    */
+#define STM32_PLLP_MASK         (3 << 16)   /**< PLLP mask.                 */
+#define STM32_PLLP_DIV2         (0 << 16)   /**< PLL clock divided by 2.    */
+#define STM32_PLLP_DIV4         (1 << 16)   /**< PLL clock divided by 4.    */
+#define STM32_PLLP_DIV6         (2 << 16)   /**< PLL clock divided by 6.    */
+#define STM32_PLLP_DIV8         (3 << 16)   /**< PLL clock divided by 8.    */
 
 #define STM32_PLLSRC_HSI        (0 << 22)   /**< PLL clock source is HSI.   */
 #define STM32_PLLSRC_HSE        (1 << 22)   /**< PLL clock source is HSE.   */
@@ -292,14 +316,14 @@
 #define STM32_HPRE_DIV256       (14 << 4)   /**< SYSCLK divided by 256.     */
 #define STM32_HPRE_DIV512       (15 << 4)   /**< SYSCLK divided by 512.     */
 
-#define STM32_PPRE1_MASK        (7 << 10)	/**< PPRE1 mask.                */
+#define STM32_PPRE1_MASK        (7 << 10)   /**< PPRE1 mask.                */
 #define STM32_PPRE1_DIV1        (0 << 10)   /**< HCLK divided by 1.         */
 #define STM32_PPRE1_DIV2        (4 << 10)   /**< HCLK divided by 2.         */
 #define STM32_PPRE1_DIV4        (5 << 10)   /**< HCLK divided by 4.         */
 #define STM32_PPRE1_DIV8        (6 << 10)   /**< HCLK divided by 8.         */
 #define STM32_PPRE1_DIV16       (7 << 10)   /**< HCLK divided by 16.        */
 
-#define STM32_PPRE2_MASK        (7 << 13)	/**< PPRE2 mask.                */
+#define STM32_PPRE2_MASK        (7 << 13)   /**< PPRE2 mask.                */
 #define STM32_PPRE2_DIV1        (0 << 13)   /**< HCLK divided by 1.         */
 #define STM32_PPRE2_DIV2        (4 << 13)   /**< HCLK divided by 2.         */
 #define STM32_PPRE2_DIV4        (5 << 13)   /**< HCLK divided by 4.         */
@@ -377,6 +401,7 @@
                                  STM32_DMA_STREAM_ID_MSK(2, 4))
 #define STM32_ADC1_DMA_CHN      0x00000000
 
+#if !(defined(STM32F401xx) || defined(STM32F411xx))
 #define STM32_HAS_ADC2          TRUE
 #define STM32_ADC2_DMA_MSK      (STM32_DMA_STREAM_ID_MSK(2, 2) |            \
                                  STM32_DMA_STREAM_ID_MSK(2, 3))
@@ -386,15 +411,24 @@
 #define STM32_ADC3_DMA_MSK      (STM32_DMA_STREAM_ID_MSK(2, 0) |            \
                                  STM32_DMA_STREAM_ID_MSK(2, 1))
 #define STM32_ADC3_DMA_CHN      0x00000022
+#else /* defined(STM32F401xx) || defined(STM32F411xx) */
+#define STM32_HAS_ADC2          FALSE
+#define STM32_HAS_ADC3          FALSE
+#endif /* defined(STM32F401xx) || defined(STM32F411xx) */
 
 #define STM32_HAS_ADC4          FALSE
 #define STM32_ADC4_DMA_MSK      0x00000000
 #define STM32_ADC4_DMA_CHN      0x00000000
 
 /* CAN attributes.*/
+#if !(defined(STM32F401xx) || defined(STM32F411xx))
 #define STM32_HAS_CAN1          TRUE
 #define STM32_HAS_CAN2          TRUE
 #define STM32_CAN_MAX_FILTERS   28
+#else /* defined(STM32F401xx) || defined(STM32F411xx) */
+#define STM32_HAS_CAN1          FALSE
+#define STM32_HAS_CAN2          FALSE
+#endif /* defined(STM32F401xx) || defined(STM32F411xx) */
 
 /* DAC attributes.*/
 #define STM32_HAS_DAC           FALSE
@@ -405,11 +439,11 @@
 #define STM32_HAS_DMA2          TRUE
 
 /* ETH attributes.*/
-#if !defined(STM32F401xx)
+#if !(defined(STM32F401xx) || defined(STM32F411xx))
 #define STM32_HAS_ETH           TRUE
-#else /* defined(STM32F401xx) */
+#else /* defined(STM32F401xx) || defined(STM32F411xx) */
 #define STM32_HAS_ETH           FALSE
-#endif /* defined(STM32F401xx) */
+#endif /* defined(STM32F401xx) || defined(STM32F411xx) */
 
 /* EXTI attributes.*/
 #define STM32_EXTI_NUM_CHANNELS 23
@@ -421,15 +455,15 @@
 #define STM32_HAS_GPIOD         TRUE
 #define STM32_HAS_GPIOE         TRUE
 #define STM32_HAS_GPIOH         TRUE
-#if !defined(STM32F401xx)
+#if !(defined(STM32F401xx) || defined(STM32F411xx))
 #define STM32_HAS_GPIOF         TRUE
 #define STM32_HAS_GPIOG         TRUE
 #define STM32_HAS_GPIOI         TRUE
-#else /* defined(STM32F401xx) */
+#else /* defined(STM32F401xx) || defined(STM32F411xx) */
 #define STM32_HAS_GPIOF         FALSE
 #define STM32_HAS_GPIOG         FALSE
 #define STM32_HAS_GPIOI         FALSE
-#endif /* defined(STM32F401xx) */
+#endif /* defined(STM32F401xx) || defined(STM32F411xx) */
 
 /* I2C attributes.*/
 #define STM32_HAS_I2C1          TRUE
@@ -492,7 +526,7 @@
 #define STM32_SPI3_TX_DMA_CHN   0x00000000
 
 #if defined(STM32F427_437xx) || defined(STM32F429_439xx) ||                 \
-    defined(STM32F401xx)
+    defined(STM32F401xx) || defined(STM32F411xx)
 #define STM32_HAS_SPI4          TRUE
 #define STM32_SPI4_RX_DMA_MSK   (STM32_DMA_STREAM_ID_MSK(2, 0) |            \
                                  STM32_DMA_STREAM_ID_MSK(2, 3))
@@ -500,11 +534,14 @@
 #define STM32_SPI4_TX_DMA_MSK   (STM32_DMA_STREAM_ID_MSK(2, 1) |            \
                                  STM32_DMA_STREAM_ID_MSK(2, 4))
 #define STM32_SPI4_TX_DMA_CHN   0x00050040
-#else
+#else /* !(defined(STM32F427_437xx) || defined(STM32F429_439xx) ||
+    defined(STM32F401xx) || defined(STM32F411xx)) */
 #define STM32_HAS_SPI4          FALSE
-#endif
+#endif /* !(defined(STM32F427_437xx) || defined(STM32F429_439xx) ||
+    defined(STM32F401xx) || defined(STM32F411xx)) */
 
-#if defined(STM32F427_437xx) || defined(STM32F429_439xx)
+#if defined(STM32F427_437xx) || defined(STM32F429_439xx) ||                 \
+    defined(STM32F411xx)
 #define STM32_HAS_SPI5          TRUE
 #define STM32_SPI5_RX_DMA_MSK   (STM32_DMA_STREAM_ID_MSK(2, 3) |            \
                                  STM32_DMA_STREAM_ID_MSK(2, 5))
@@ -519,10 +556,12 @@
 #define STM32_SPI6_TX_DMA_MSK   (STM32_DMA_STREAM_ID_MSK(2, 5))
 #define STM32_SPI6_TX_DMA_CHN   0x00100000
 
-#else /* !(defined(STM32F427_437xx) || defined(STM32F429_439xx)) */
+#else /* !(defined(STM32F427_437xx) || defined(STM32F429_439xx) ||
+    defined(STM32F411xx)) */
 #define STM32_HAS_SPI5          FALSE
 #define STM32_HAS_SPI6          FALSE
-#endif /* !(defined(STM32F427_437xx) || defined(STM32F429_439xx)) */
+#endif /* !(defined(STM32F427_437xx) || defined(STM32F429_439xx) ||
+    defined(STM32F411xx)) */
 
 /* TIM attributes.*/
 #define STM32_HAS_TIM1          TRUE
@@ -530,27 +569,27 @@
 #define STM32_HAS_TIM3          TRUE
 #define STM32_HAS_TIM4          TRUE
 #define STM32_HAS_TIM5          TRUE
-#if !defined(STM32F401xx)
+#if !(defined(STM32F401xx) || defined(STM32F411xx))
 #define STM32_HAS_TIM6          TRUE
 #define STM32_HAS_TIM7          TRUE
 #define STM32_HAS_TIM8          TRUE
-#else /* defined(STM32F401xx) */
+#else /* defined(STM32F401xx) || defined(STM32F411xx) */
 #define STM32_HAS_TIM6          FALSE
 #define STM32_HAS_TIM7          FALSE
 #define STM32_HAS_TIM8          FALSE
-#endif /* defined(STM32F401xx) */
+#endif /* defined(STM32F401xx) || defined(STM32F411xx) */
 #define STM32_HAS_TIM9          TRUE
 #define STM32_HAS_TIM10         TRUE
 #define STM32_HAS_TIM11         TRUE
-#if !defined(STM32F401xx)
+#if !(defined(STM32F401xx) || defined(STM32F411xx))
 #define STM32_HAS_TIM12         TRUE
 #define STM32_HAS_TIM13         TRUE
 #define STM32_HAS_TIM14         TRUE
-#else /* defined(STM32F401xx) */
+#else /* defined(STM32F401xx) || defined(STM32F411xx) */
 #define STM32_HAS_TIM12         FALSE
 #define STM32_HAS_TIM13         FALSE
 #define STM32_HAS_TIM14         FALSE
-#endif /* defined(STM32F401xx) */
+#endif /* defined(STM32F401xx) || defined(STM32F411xx) */
 #define STM32_HAS_TIM15         FALSE
 #define STM32_HAS_TIM16         FALSE
 #define STM32_HAS_TIM17         FALSE
@@ -571,7 +610,7 @@
 #define STM32_USART2_TX_DMA_MSK (STM32_DMA_STREAM_ID_MSK(1, 6))
 #define STM32_USART2_TX_DMA_CHN 0x04000000
 
-#if !defined(STM32F401xx)
+#if !(defined(STM32F401xx) || defined(STM32F411xx))
 #define STM32_HAS_USART3        TRUE
 #define STM32_USART3_RX_DMA_MSK (STM32_DMA_STREAM_ID_MSK(1, 1))
 #define STM32_USART3_RX_DMA_CHN 0x00000040
@@ -591,11 +630,11 @@
 #define STM32_UART5_TX_DMA_MSK  (STM32_DMA_STREAM_ID_MSK(1, 7))
 #define STM32_UART5_TX_DMA_CHN  0x40000000
 
-#else /* defined(STM32F401xx) */
+#else /* defined(STM32F401xx) || defined(STM32F411xx) */
 #define STM32_HAS_USART3        FALSE
 #define STM32_HAS_UART4         FALSE
 #define STM32_HAS_UART5         FALSE
-#endif /* defined(STM32F401xx) */
+#endif /* defined(STM32F401xx) || defined(STM32F411xx) */
 
 #define STM32_HAS_USART6        TRUE
 #define STM32_USART6_RX_DMA_MSK (STM32_DMA_STREAM_ID_MSK(2, 1) |            \
@@ -608,11 +647,11 @@
 /* USB attributes.*/
 #define STM32_HAS_USB           FALSE
 #define STM32_HAS_OTG1          TRUE
-#if !defined(STM32F401xx)
+#if !(defined(STM32F401xx) || defined(STM32F411xx))
 #define STM32_HAS_OTG2          TRUE
-#else /* defined(STM32F401xx) */
+#else /* defined(STM32F401xx) || defined(STM32F411xx) */
 #define STM32_HAS_OTG2          FALSE
-#endif /* defined(STM32F401xx) */
+#endif /* defined(STM32F401xx) || defined(STM32F411xx) */
 /** @} */
 
 /*===========================================================================*/
@@ -1111,6 +1150,51 @@
 #error "invalid VDD voltage specified"
 #endif
 
+#elif defined(STM32F411xx)
+#if (STM32_VDD >= 270) && (STM32_VDD <= 360)
+#define STM32_0WS_THRESHOLD         30000000
+#define STM32_1WS_THRESHOLD         64000000
+#define STM32_2WS_THRESHOLD         90000000
+#define STM32_3WS_THRESHOLD         100000000
+#define STM32_4WS_THRESHOLD         0
+#define STM32_5WS_THRESHOLD         0
+#define STM32_6WS_THRESHOLD         0
+#define STM32_7WS_THRESHOLD         0
+#define STM32_8WS_THRESHOLD         0
+#elif (STM32_VDD >= 240) && (STM32_VDD < 270)
+#define STM32_0WS_THRESHOLD         24000000
+#define STM32_1WS_THRESHOLD         48000000
+#define STM32_2WS_THRESHOLD         72000000
+#define STM32_3WS_THRESHOLD         96000000
+#define STM32_4WS_THRESHOLD         100000000
+#define STM32_5WS_THRESHOLD         0
+#define STM32_6WS_THRESHOLD         0
+#define STM32_7WS_THRESHOLD         0
+#define STM32_8WS_THRESHOLD         0
+#elif (STM32_VDD >= 210) && (STM32_VDD < 240)
+#define STM32_0WS_THRESHOLD         18000000
+#define STM32_1WS_THRESHOLD         36000000
+#define STM32_2WS_THRESHOLD         54000000
+#define STM32_3WS_THRESHOLD         72000000
+#define STM32_4WS_THRESHOLD         90000000
+#define STM32_5WS_THRESHOLD         100000000
+#define STM32_6WS_THRESHOLD         0
+#define STM32_7WS_THRESHOLD         0
+#define STM32_8WS_THRESHOLD         0
+#elif (STM32_VDD >= 180) && (STM32_VDD < 210)
+#define STM32_0WS_THRESHOLD         16000000
+#define STM32_1WS_THRESHOLD         32000000
+#define STM32_2WS_THRESHOLD         48000000
+#define STM32_3WS_THRESHOLD         64000000
+#define STM32_4WS_THRESHOLD         80000000
+#define STM32_5WS_THRESHOLD         96000000
+#define STM32_6WS_THRESHOLD         100000000
+#define STM32_7WS_THRESHOLD         0
+#define STM32_8WS_THRESHOLD         0
+#else
+#error "invalid VDD voltage specified"
+#endif
+
 #else /* STM32F2XX */
 #if (STM32_VDD >= 270) && (STM32_VDD <= 360)
 #define STM32_0WS_THRESHOLD         30000000
@@ -1414,6 +1498,16 @@
 #define STM32_VOS                   STM32_VOS_SCALE3
 #else
 #define STM32_VOS                   STM32_VOS_SCALE2
+#endif
+#define STM32_OVERDRIVE_REQUIRED    FALSE
+
+#elif defined(STM32F411xx)
+#if STM32_SYSCLK <= 60000000
+#define STM32_VOS                   STM32_VOS_SCALE3
+#elif STM32_SYSCLK <= 84000000
+#define STM32_VOS                   STM32_VOS_SCALE2
+#else
+#define STM32_VOS                   STM32_VOS_SCALE1
 #endif
 #define STM32_OVERDRIVE_REQUIRED    FALSE
 
