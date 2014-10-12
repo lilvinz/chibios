@@ -130,6 +130,9 @@ ADCDriver ADCD1;
  * and registers directly rather than through the passed in pointers. This works because the
  * AT91SAM7 supports only a single ADC device (although with 8 channels).
  */
+#if defined(__GNUC__)
+__attribute__((noinline))
+#endif
 static void handleint(void) {
 	uint32_t	isr;
 
