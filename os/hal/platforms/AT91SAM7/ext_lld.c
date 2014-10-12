@@ -61,6 +61,9 @@ EXTDriver EXTDB;
  *
  * @param[in] extp      pointer to the driver that received the interrupt
  */
+#if defined(__GNUC__)
+__attribute__((noinline))
+#endif
 static void ext_lld_serveInterrupt(EXTDriver *extp) {
   uint32_t irqFlags;
   uint32_t ch;
