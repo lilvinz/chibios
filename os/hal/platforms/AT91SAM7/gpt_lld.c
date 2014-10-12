@@ -72,6 +72,9 @@
  *
  * @param[in] gptp      pointer to a @p GPTDriver object
  */
+#if defined(__GNUC__)
+__attribute__((noinline))
+#endif
 static void gpt_lld_serve_interrupt(GPTDriver *gptp) {
 	// Read the status to clear the interrupts
 	{ uint32_t	isr = gptp->tc->TC_SR; (void) isr; }
