@@ -184,6 +184,10 @@ void spi_lld_init(void) {
   AT91C_BASE_PIOA->PIO_PDR   = SPI0_MISO | SPI0_MOSI | SPI0_SCK;
   AT91C_BASE_PIOA->PIO_ASR   = SPI0_MISO | SPI0_MOSI | SPI0_SCK;
   AT91C_BASE_PIOA->PIO_PPUDR = SPI0_MISO | SPI0_MOSI | SPI0_SCK;
+  /* Reinit spi device after reconfiguring pins to prevent spurious clocks
+   * before first transfer. This is a silicon error.
+   */
+  spi_init(AT91C_BASE_SPI0);
   AIC_ConfigureIT(AT91C_ID_SPI0,
                   AT91C_AIC_SRCTYPE_HIGH_LEVEL | AT91SAM7_SPI0_PRIORITY,
                   SPI0IrqHandler);
@@ -196,6 +200,10 @@ void spi_lld_init(void) {
   AT91C_BASE_PIOA->PIO_PDR   = SPI1_MISO | SPI1_MOSI | SPI1_SCK;
   AT91C_BASE_PIOA->PIO_BSR   = SPI1_MISO | SPI1_MOSI | SPI1_SCK;
   AT91C_BASE_PIOA->PIO_PPUDR = SPI1_MISO | SPI1_MOSI | SPI1_SCK;
+  /* Reinit spi device after reconfiguring pins to prevent spurious clocks
+   * before first transfer. This is a silicon error.
+   */
+  spi_init(AT91C_BASE_SPI1);
   AIC_ConfigureIT(AT91C_ID_SPI1,
                   AT91C_AIC_SRCTYPE_HIGH_LEVEL | AT91SAM7_SPI1_PRIORITY,
                   SPI1IrqHandler);
