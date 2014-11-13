@@ -68,8 +68,6 @@ static void ext_lld_serveInterrupt(EXTDriver *extp) {
   uint32_t irqFlags;
   uint32_t ch;
 
-  chSysLockFromIsr();
-
   /* Read flags of pending PIO interrupts.*/
   irqFlags = extp->pio->PIO_ISR;
 
@@ -83,10 +81,6 @@ static void ext_lld_serveInterrupt(EXTDriver *extp) {
       (extp->config->channels[ch].cb)(extp, ch);
     }
   }
-
-  chSysUnlockFromIsr();
-
-  AT91C_BASE_AIC->AIC_EOICR = 0;
 }
 
 /*===========================================================================*/
@@ -104,6 +98,8 @@ CH_IRQ_HANDLER(EXTIA_IRQHandler) {
 
   ext_lld_serveInterrupt(&EXTDA);
 
+  AT91C_BASE_AIC->AIC_EOICR = 0;
+
   CH_IRQ_EPILOGUE();
 }
 
@@ -118,6 +114,8 @@ CH_IRQ_HANDLER(EXTIB_IRQHandler) {
   CH_IRQ_PROLOGUE();
 
   ext_lld_serveInterrupt(&EXTDB);
+
+  AT91C_BASE_AIC->AIC_EOICR = 0;
 
   CH_IRQ_EPILOGUE();
 }
