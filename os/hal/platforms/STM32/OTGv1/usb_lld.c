@@ -712,6 +712,7 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
 /* Driver interrupt handlers and threads.                                    */
 /*===========================================================================*/
 
+__attribute__((noreturn))
 static msg_t usb_lld_pump(void *p) {
   USBDriver *usbp = (USBDriver *)p;
   stm32_otg_t *otgp = usbp->otg;
