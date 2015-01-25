@@ -284,7 +284,7 @@ bool_t shellGetLine(BaseSequentialStream *chp, char *line, unsigned size) {
       chprintf(chp, "^D");
       return TRUE;
     }
-    if (c == 8) {
+    if ((c == 8) || (c == 127)) {
       if (p != line) {
         chSequentialStreamPut(chp, c);
         chSequentialStreamPut(chp, 0x20);
@@ -293,12 +293,7 @@ bool_t shellGetLine(BaseSequentialStream *chp, char *line, unsigned size) {
       }
       continue;
     }
-    if (c ==
-#if defined(CH_ARCHITECTURE_SIMIA32)
-        '\n') {
-#else
-        '\r') {
-#endif
+    if (c == '\r') {
       chprintf(chp, "\r\n");
       *p = 0;
       return FALSE;

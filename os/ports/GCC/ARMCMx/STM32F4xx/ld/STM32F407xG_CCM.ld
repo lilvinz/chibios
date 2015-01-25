@@ -14,6 +14,20 @@
     limitations under the License.
 */
 
+/*
+ * ST32F407xG memory setup.
+ */
+__main_stack_size__     = 0x0400;
+__process_stack_size__  = 0x0400;
+
+MEMORY
+{
+    flash : org = 0x08000000, len = 1M
+    ram : org = 0x20000000, len = 112k
+    ethram : org = 0x2001C000, len = 16k
+    ccmram : org = 0x10000000, len = 64k
+}
+
 __ram_start__           = ORIGIN(ram);
 __ram_size__            = LENGTH(ram);
 __ram_end__             = __ram_start__ + __ram_size__;
@@ -28,11 +42,6 @@ SECTIONS
     startup : ALIGN(16) SUBALIGN(16)
     {
         KEEP(*(vectors))
-    } > flash
-    
-    imageinformation :
-    {
-        KEEP(*(.image_information))
     } > flash
 
     constructors : ALIGN(4) SUBALIGN(4)
@@ -49,13 +58,6 @@ SECTIONS
         KEEP(*(.fini_array))
         KEEP(*(SORT(.fini_array.*)))
         PROVIDE(__fini_array_end = .);
-    } > flash
-
-    .initcall : ALIGN(4)
-    {
-        __module_initcall_start = .;
-        KEEP(*(SORT(.initcall.*)))
-        __module_initcall_end = .;
     } > flash
 
     .text : ALIGN(16) SUBALIGN(16)
@@ -140,27 +142,23 @@ SECTIONS
         PROVIDE(_cmm_end = .);
     } > ccmram
 
-    .data :
+    .data ALIGN(4) : ALIGN(4)
     {
         . = ALIGN(4);
         PROVIDE(_data = .);
         *(.data)
-        . = ALIGN(4);
         *(.data.*)
-        . = ALIGN(4);
         *(.ramtext)
         . = ALIGN(4);
         PROVIDE(_edata = .);
     } > ram AT > flash
 
-    .bss :
+    .bss ALIGN(4) : ALIGN(4)
     {
         . = ALIGN(4);
         PROVIDE(_bss_start = .);
         *(.bss)
-        . = ALIGN(4);
         *(.bss.*)
-        . = ALIGN(4);
         *(COMMON)
         . = ALIGN(4);
         PROVIDE(_bss_end = .);

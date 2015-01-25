@@ -56,7 +56,7 @@ struct EventListener {
                                                     by the thread to the Event
                                                     Source.                 */
   flagsmask_t           el_flags;       /**< @brief Flags added to the listener
-                                                    by the event source.*/
+                                                    by the event source.    */
 };
 
 /**
@@ -115,7 +115,7 @@ typedef void (*evhandler_t)(eventid_t);
  *                      identifier is used as index for the event callback
  *                      function.
  *                      The value must range between zero and the size, in bit,
- *                      of the @p eventid_t type minus one.
+ *                      of the @p eventmask_t type minus one.
  *
  * @api
  */
@@ -191,9 +191,9 @@ extern "C" {
   eventmask_t chEvtWaitAll(eventmask_t mask);
 #endif
 #if CH_USE_EVENTS_TIMEOUT
-  eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t timeout);
-  eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t timeout);
-  eventmask_t chEvtWaitAllTimeout(eventmask_t mask, systime_t timeout);
+  eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t time);
+  eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t time);
+  eventmask_t chEvtWaitAllTimeout(eventmask_t mask, systime_t time);
 #endif
 #ifdef __cplusplus
 }

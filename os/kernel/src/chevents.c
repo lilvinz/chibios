@@ -358,7 +358,7 @@ eventmask_t chEvtWaitOne(eventmask_t mask) {
     chSchGoSleepS(THD_STATE_WTOREVT);
     m = ctp->p_epending & mask;
   }
-  m &= -m;
+  m ^= m & (m - 1);
   ctp->p_epending &= ~m;
 
   chSysUnlock();
@@ -443,25 +443,25 @@ eventmask_t chEvtWaitAll(eventmask_t mask) {
  *
  * @api
  */
-eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t timeout) {
+eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t time) {
   Thread *ctp = currp;
   eventmask_t m;
 
   chSysLock();
 
   if ((m = (ctp->p_epending & mask)) == 0) {
-    if (TIME_IMMEDIATE == timeout) {
+    if (TIME_IMMEDIATE == time) {
       chSysUnlock();
       return (eventmask_t)0;
     }
     ctp->p_u.ewmask = mask;
-    if (chSchGoSleepTimeoutS(THD_STATE_WTOREVT, timeout) < RDY_OK) {
+    if (chSchGoSleepTimeoutS(THD_STATE_WTOREVT, time) < RDY_OK) {
       chSysUnlock();
       return (eventmask_t)0;
     }
     m = ctp->p_epending & mask;
   }
-  m &= -m;
+  m ^= m & (m - 1);
   ctp->p_epending &= ~m;
 
   chSysUnlock();
@@ -486,19 +486,19 @@ eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t timeout) {
  *
  * @api
  */
-eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t timeout) {
+eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t time) {
   Thread *ctp = currp;
   eventmask_t m;
 
   chSysLock();
 
   if ((m = (ctp->p_epending & mask)) == 0) {
-    if (TIME_IMMEDIATE == timeout) {
+    if (TIME_IMMEDIATE == time) {
       chSysUnlock();
       return (eventmask_t)0;
     }
     ctp->p_u.ewmask = mask;
-    if (chSchGoSleepTimeoutS(THD_STATE_WTOREVT, timeout) < RDY_OK) {
+    if (chSchGoSleepTimeoutS(THD_STATE_WTOREVT, time) < RDY_OK) {
       chSysUnlock();
       return (eventmask_t)0;
     }
@@ -527,18 +527,18 @@ eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t timeout) {
  *
  * @api
  */
-eventmask_t chEvtWaitAllTimeout(eventmask_t mask, systime_t timeout) {
+eventmask_t chEvtWaitAllTimeout(eventmask_t mask, systime_t time) {
   Thread *ctp = currp;
 
   chSysLock();
 
   if ((ctp->p_epending & mask) != mask) {
-    if (TIME_IMMEDIATE == timeout) {
+    if (TIME_IMMEDIATE == time) {
       chSysUnlock();
       return (eventmask_t)0;
     }
     ctp->p_u.ewmask = mask;
-    if (chSchGoSleepTimeoutS(THD_STATE_WTANDEVT, timeout) < RDY_OK) {
+    if (chSchGoSleepTimeoutS(THD_STATE_WTANDEVT, time) < RDY_OK) {
       chSysUnlock();
       return (eventmask_t)0;
     }

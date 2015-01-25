@@ -54,7 +54,6 @@
 *  15.11.09  gdisirio   Added read and write handling
 ****************************************************************************/
 
-
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -65,8 +64,6 @@
 #if defined(STDOUT_SD) || defined(STDIN_SD)
 #include "hal.h"
 #endif
-
-#if !defined(CH_ARCHITECTURE_SIMIA32)
 
 #ifndef __errno_r
 #include <sys/reent.h>
@@ -176,7 +173,5 @@ int _isatty_r(struct _reent *r, int fd)
 
   return 1;
 }
-
-#endif /* CH_ARCHITECTURE_SIMIA32 */
 
 /*** EOF ***/

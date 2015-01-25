@@ -126,9 +126,6 @@ static void _i2c_lld_serve_tx_interrupt(I2CDriver *i2cp){
  *
  * @notapi
  */
-#if defined(__GNUC__)
-__attribute__((noinline))
-#endif
 static void i2c_lld_serve_interrupt(I2CDriver *i2cp) {
 
   uint32_t sr;

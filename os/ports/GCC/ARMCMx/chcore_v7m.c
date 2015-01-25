@@ -133,13 +133,11 @@ void _port_init(void) {
 }
 
 #if !CH_OPTIMIZE_SPEED
-__attribute((used))
 void _port_lock(void) {
   register uint32_t tmp asm ("r3") = CORTEX_BASEPRI_KERNEL;
   asm volatile ("msr     BASEPRI, %0" : : "r" (tmp) : "memory");
 }
 
-__attribute((used))
 void _port_unlock(void) {
   register uint32_t tmp asm ("r3") = CORTEX_BASEPRI_DISABLED;
   asm volatile ("msr     BASEPRI, %0" : : "r" (tmp) : "memory");
@@ -168,6 +166,9 @@ void _port_irq_epilogue(void) {
        populate it fully.*/
     ctxp--;
     ctxp->xpsr = (regarm_t)0x01000000;
+#if CORTEX_USE_FPU
+    ctxp->fpscr = (regarm_t)SCB_FPDSCR;
+#endif
     asm volatile ("msr     PSP, %0" : : "r" (ctxp) : "memory");
 
     /* The exit sequence is different depending on if a preemption is
@@ -187,6 +188,73 @@ void _port_irq_epilogue(void) {
     return;
   }
   port_unlock_from_isr();
+}
+
+/**
+ * @brief   Post-IRQ switch code.
+ * @details Exception handlers return here for context switching.
+ */
+#if !defined(__DOXYGEN__)
+__attribute__((naked))
+#endif
+void _port_switch_from_isr(void) {
+
+  dbg_check_lock();
+  chSchDoReschedule();
+  dbg_check_unlock();
+  asm volatile ("_port_exit_from_isr:" : : : "memory");
+#if !CORTEX_SIMPLIFIED_PRIORITY || defined(__DOXYGEN__)
+  asm volatile ("svc     #0");
+#else /* CORTEX_SIMPLIFIED_PRIORITY */
+  SCB_ICSR = ICSR_PENDSVSET;
+  port_unlock();
+  while (TRUE)
+    ;
+#endif /* CORTEX_SIMPLIFIED_PRIORITY */
+}
+
+/**
+ * @brief   Performs a context switch between two threads.
+ * @details This is the most critical code in any port, this function
+ *          is responsible for the context switch between 2 threads.
+ * @note    The implementation of this code affects <b>directly</b> the context
+ *          switch performance so optimize here as much as you can.
+ *
+ * @param[in] ntp       the thread to be switched in
+ * @param[in] otp       the thread to be switched out
+ */
+#if !defined(__DOXYGEN__)
+__attribute__((naked))
+#endif
+void _port_switch(Thread *ntp, Thread *otp) {
+
+  asm volatile ("push    {r4, r5, r6, r7, r8, r9, r10, r11, lr}"
+                : : : "memory");
+#if CORTEX_USE_FPU
+  asm volatile ("vpush   {s16-s31}" : : : "memory");
+#endif
+
+  asm volatile ("str     sp, [%1, #12]                          \n\t"
+                "ldr     sp, [%0, #12]" : : "r" (ntp), "r" (otp));
+
+#if CORTEX_USE_FPU
+  asm volatile ("vpop    {s16-s31}" : : : "memory");
+#endif
+  asm volatile ("pop     {r4, r5, r6, r7, r8, r9, r10, r11, pc}"
+                : : : "memory");
+}
+
+/**
+ * @brief   Start a thread by invoking its work function.
+ * @details If the work function returns @p chThdExit() is automatically
+ *          invoked.
+ */
+void _port_thread_start(void) {
+
+  chSysUnlock();
+  asm volatile ("mov     r0, r5                                 \n\t"
+                "blx     r4                                     \n\t"
+                "bl      chThdExit");
 }
 
 /** @} */
