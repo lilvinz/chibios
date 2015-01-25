@@ -398,7 +398,7 @@ void pwm_lld_init(void) {
  */
 void pwm_lld_start(PWMDriver *pwmp) {
   uint32_t psc;
-  uint16_t ccer;
+  uint32_t ccer;
 
   if (pwmp->state == PWM_STOP) {
     /* Clock activation and timer reset.*/
@@ -489,9 +489,6 @@ void pwm_lld_start(PWMDriver *pwmp) {
   else {
     /* Driver re-configuration scenario, it must be stopped first.*/
     pwmp->tim->CR1    = 0;                  /* Timer disabled.              */
-    pwmp->tim->DIER   = pwmp->config->dier &/* DMA-related DIER settings.   */
-                        ~STM32_TIM_DIER_IRQ_MASK;
-    pwmp->tim->SR     = 0;                  /* Clear eventual pending IRQs. */
     pwmp->tim->CCR[0] = 0;                  /* Comparator 1 disabled.       */
     pwmp->tim->CCR[1] = 0;                  /* Comparator 2 disabled.       */
     pwmp->tim->CCR[2] = 0;                  /* Comparator 3 disabled.       */
@@ -581,8 +578,9 @@ void pwm_lld_start(PWMDriver *pwmp) {
 
   pwmp->tim->CCER  = ccer;
   pwmp->tim->EGR   = STM32_TIM_EGR_UG;      /* Update event.                */
-  pwmp->tim->DIER |= pwmp->config->callback == NULL ? 0 : STM32_TIM_DIER_UIE;
   pwmp->tim->SR    = 0;                     /* Clear pending IRQs.          */
+  pwmp->tim->DIER  = (pwmp->config->callback == NULL ? 0 : STM32_TIM_DIER_UIE) |
+                     (pwmp->config->dier & ~STM32_TIM_DIER_IRQ_MASK);
 #if STM32_PWM_USE_TIM1 || STM32_PWM_USE_TIM8
 #if STM32_PWM_USE_ADVANCED
   pwmp->tim->BDTR  = pwmp->config->bdtr | STM32_TIM_BDTR_MOE;

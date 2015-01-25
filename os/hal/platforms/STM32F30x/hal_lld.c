@@ -100,6 +100,7 @@ static void hal_lld_backup_domain_init(void) {
 void hal_lld_init(void) {
 
   /* Reset of all peripherals.*/
+  rccResetAHB(0xFFFFFFFF);
   rccResetAPB1(0xFFFFFFFF);
   rccResetAPB2(0xFFFFFFFF);
 
@@ -152,10 +153,18 @@ void stm32_clock_init(void) {
   RCC->CR |= RCC_CR_HSION;                  /* Make sure HSI is ON.         */
   while (!(RCC->CR & RCC_CR_HSIRDY))
     ;                                       /* Wait until HSI is stable.    */
+  
+  /* HSI is selected as new source without touching the other fields in
+     CFGR. Clearing the register has to be postponed after HSI is the
+     new source.*/
+  RCC->CFGR &= ~RCC_CFGR_SW;                /* Reset SW */
+  RCC->CFGR |= RCC_CFGR_SWS_HSI;            /* Select HSI as internal*/
+  while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI)
+    ;                                       /* Wait until HSI is selected.  */
+  
+  /* Registers finally cleared to reset values.*/
   RCC->CR &= RCC_CR_HSITRIM | RCC_CR_HSION; /* CR Reset value.              */
   RCC->CFGR = 0;                            /* CFGR reset value.            */
-  while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI)
-    ;                                       /* Waits until HSI is selected. */
 
 #if STM32_HSE_ENABLED
   /* HSE activation.*/
@@ -183,8 +192,8 @@ void stm32_clock_init(void) {
                STM32_HPRE;
   RCC->CFGR2 = STM32_ADC34PRES | STM32_ADC12PRES | STM32_PREDIV;
   RCC->CFGR3 = STM32_UART5SW   | STM32_UART4SW   | STM32_USART3SW |
-               STM32_USART2SW  | STM32_TIM8SW    | STM32_TIM1SW   |
-               STM32_I2C2SW    | STM32_I2C1SW    | STM32_USART1SW;
+               STM32_USART2SW  | STM32_I2C2SW    | STM32_I2C1SW   |
+               STM32_USART1SW;
 
 #if STM32_ACTIVATE_PLL
   /* PLL activation.*/
@@ -203,6 +212,10 @@ void stm32_clock_init(void) {
   while ((RCC->CFGR & RCC_CFGR_SWS) != (STM32_SW << 2))
     ;                                       /* Waits selection complete.    */
 #endif
+
+  /* After PLL activation because the special requirements for TIM1 and
+     TIM8 bits.*/
+  RCC->CFGR3 |= STM32_TIM8SW | STM32_TIM1SW;
 #endif /* !STM32_NO_INIT */
 }
 

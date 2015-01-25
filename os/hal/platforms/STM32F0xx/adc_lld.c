@@ -190,12 +190,12 @@ void adc_lld_start(ADCDriver *adcp) {
       rccEnableADC1(FALSE);
 #if STM32_ADCSW == STM32_ADCSW_HSI14
       /* Clock from HSI14, no need for jitter removal.*/
-      ADC1->CFGR2 = 0x00001000;
+      ADC1->CFGR2 = 0;
 #else
 #if STM32_ADCPRE == STM32_ADCPRE_DIV2
-      ADC1->CFGR2 = 0x00001000 | ADC_CFGR2_JITOFFDIV2;
+      ADC1->CFGR2 = ADC_CFGR2_JITOFFDIV2;
 #else
-      ADC1->CFGR2 = 0x00001000 | ADC_CFGR2_JITOFFDIV4;
+      ADC1->CFGR2 = ADC_CFGR2_JITOFFDIV4;
 #endif
 #endif
     }
@@ -246,13 +246,15 @@ void adc_lld_stop(ADCDriver *adcp) {
  * @notapi
  */
 void adc_lld_start_conversion(ADCDriver *adcp) {
-  uint32_t mode;
+  uint32_t mode, cfgr1;
   const ADCConversionGroup *grpp = adcp->grpp;
 
   /* DMA setup.*/
-  mode = adcp->dmamode;
+  mode  = adcp->dmamode;
+  cfgr1 = grpp->cfgr1 | ADC_CFGR1_DMAEN;
   if (grpp->circular) {
-    mode |= STM32_DMA_CR_CIRC;
+    mode  |= STM32_DMA_CR_CIRC;
+    cfgr1 |= ADC_CFGR1_DMACFG;
     if (adcp->depth > 1) {
       /* If circular buffer depth > 1, then the half transfer interrupt
          is enabled in order to allow streaming processing.*/
@@ -274,8 +276,7 @@ void adc_lld_start_conversion(ADCDriver *adcp) {
   adcp->adc->CHSELR = grpp->chselr;
 
   /* ADC configuration and start.*/
-  adcp->adc->CFGR1  = grpp->cfgr1 | ADC_CFGR1_CONT  | ADC_CFGR1_DMACFG |
-                                    ADC_CFGR1_DMAEN;
+  adcp->adc->CFGR1  = cfgr1;
   adcp->adc->CR    |= ADC_CR_ADSTART;
 }
 

@@ -36,6 +36,7 @@
 #define TRDT_VALUE              5
 
 #define EP0_MAX_INSIZE          64
+#define EP0_MAX_OUTSIZE         64
 
 /*===========================================================================*/
 /* Driver exported variables.                                                */
@@ -610,7 +611,23 @@ static void otg_epout_handler(USBDriver *usbp, usbep_t ep) {
   }
   if ((epint & DOEPINT_XFRC) && (otgp->DOEPMSK & DOEPMSK_XFRCM)) {
     /* Receive transfer complete.*/
-    _usb_isr_invoke_out_cb(usbp, ep);
+    USBOutEndpointState *osp = usbp->epc[ep]->out_state;
+
+    if (osp->rxsize < osp->totsize) {
+      /* In case the transaction covered only part of the total transfer
+         then another transaction is immediately started in order to
+         cover the remaining.*/
+      osp->rxsize = osp->totsize - osp->rxsize;
+      osp->rxcnt  = 0;
+      usb_lld_prepare_receive(usbp, ep);
+      chSysLockFromIsr();
+      usb_lld_start_out(usbp, ep);
+      chSysUnlockFromIsr();
+    }
+    else {
+      /* End on OUT transfer.*/
+      _usb_isr_invoke_out_cb(usbp, ep);
+    }
   }
 }
 
@@ -625,7 +642,8 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
   stm32_otg_t *otgp = usbp->otg;
   uint32_t sts, src;
 
-  sts = otgp->GINTSTS & otgp->GINTMSK;
+  sts  = otgp->GINTSTS;
+  sts &= otgp->GINTMSK;
   otgp->GINTSTS = sts;
 
   /* Reset interrupt handling.*/
@@ -694,6 +712,7 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
 /* Driver interrupt handlers and threads.                                    */
 /*===========================================================================*/
 
+__attribute__((noreturn))
 static msg_t usb_lld_pump(void *p) {
   USBDriver *usbp = (USBDriver *)p;
   stm32_otg_t *otgp = usbp->otg;
@@ -748,8 +767,6 @@ static msg_t usb_lld_pump(void *p) {
     }
     chSysLock();
   }
-  chSysUnlock();
-  return 0;
 }
 
 #if STM32_USB_USE_OTG1 || defined(__DOXYGEN__)
@@ -818,7 +835,7 @@ void usb_lld_init(void) {
                     (uint8_t *)wsp + sizeof(Thread),
                     CH_THREAD_FILL_VALUE);
     _thread_memfill((uint8_t *)wsp + sizeof(Thread),
-                    (uint8_t *)wsp + sizeof(USBD1.wa_pump) - sizeof(Thread),
+                    (uint8_t *)wsp + sizeof(USBD1.wa_pump),
                     CH_STACK_FILL_VALUE);
   }
 #endif
@@ -840,7 +857,7 @@ void usb_lld_init(void) {
                     (uint8_t *)wsp + sizeof(Thread),
                     CH_THREAD_FILL_VALUE);
     _thread_memfill((uint8_t *)wsp + sizeof(Thread),
-                    (uint8_t *)wsp + sizeof(USBD2.wa_pump) - sizeof(Thread),
+                    (uint8_t *)wsp + sizeof(USBD2.wa_pump),
                     CH_STACK_FILL_VALUE);
   }
 #endif
@@ -1214,6 +1231,10 @@ void usb_lld_prepare_receive(USBDriver *usbp, usbep_t ep) {
   USBOutEndpointState *osp = usbp->epc[ep]->out_state;
 
   /* Transfer initialization.*/
+  osp->totsize = osp->rxsize;
+  if ((ep == 0) && (osp->rxsize  > EP0_MAX_OUTSIZE))
+      osp->rxsize = EP0_MAX_OUTSIZE;
+
   pcnt = (osp->rxsize + usbp->epc[ep]->out_maxsize - 1) /
          usbp->epc[ep]->out_maxsize;
   usbp->otg->oe[ep].DOEPTSIZ = DOEPTSIZ_STUPCNT(3) | DOEPTSIZ_PKTCNT(pcnt) |

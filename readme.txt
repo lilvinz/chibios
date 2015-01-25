@@ -71,7 +71,36 @@
 *** Releases                                                              ***
 *****************************************************************************
 
+*** 2.6.7 ***
+- FIX: Fixed OLIMEX STM32-E407 board.h errors (FAULT input swap and wrong
+  BUSON initial output state) (bug #551).
+- FIX: Fixed STM32F3xx clock init fails if PLL is enabled at startup
+  (bug #550).
+- FIX: Fixed problem in GCC scatter files (bug #548).
+- FIX: Fixed kernel function chEvtWaitOne() malfunctioning (bug #547).
+- FIX: Fixed minor warnings while building with IAR 7.3.0 (bug #542).
+- FIX: Fixed STM32 OTGv1 usb_lld_pump improper stack filling (bug #541).
+- FIX: Fixed chsnprintf sometimes doesn't terminate str (bug #538).
+- FIX: Fixed wrong wait states for STM32F401 (bug #537).
+- FIX: Fixed failure to compile EXT driver on STM32F401, re-opened
+  ticket (bug #517).
+
 *** 2.6.6 ***
+- FIX: Fixed error in STM32F30x adc_lld_stop() (bug #535).
+- FIX: Fixed STM32 DIER register setting in PWM and ICU drivers (bug #534).
+- FIX: Fixed ARMCM4 FPU exception randomly triggered (bug #533).
+- FIX: Fixed control transfers larger than 127 bytes don't work (bug #531).
+- FIX: Fixed STM32F0xx ADC driver enforces continuous mode (bug #528).
+       Note, this bug enforced a change, now the bit ADC_CFGR1_CONT must be
+       manually specified in the cfgr1 field of the ADCConversionGroup
+       structure when applicable.
+- FIX: Fixed STM32F30x ADC driver enforces continuous mode (bug #527).
+       Note, this bug enforced a change, now the bit ADC_CFGR_CONT must be
+       manually specified in the cfgr field of the ADCConversionGroup
+       structure when applicable.
+- FIX: Fixed double clock mode for TIM1/TIM8 on STM32F30x fails (bug #525).
+- FIX: Fixed SDC initialization error with V1.1 cards (bug #523).
+- FIX: Fixed Race condition in STM32 SDC driver (bug #522).
 - FIX: Fixed failure to compile EXT driver on STM32F401 (bug #517).
 - FIX: Fixed wrong DMA channels for STM32L1 I2C1 unit (bug #516).
 - FIX: Fixed EXT driver compile error on STM32F030 (bug #514).
