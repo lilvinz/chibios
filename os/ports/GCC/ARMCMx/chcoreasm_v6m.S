@@ -85,7 +85,7 @@ _port_switch:
                 .globl  _port_thread_start
 _port_thread_start:
 #if CH_DBG_SYSTEM_STATE_CHECK
-                bl      _dbg_check_unlock
+                bl      dbg_check_unlock
 #endif
 #if CH_DBG_STATISTICS
                 bl      _stats_stop_measure_crit_thd
@@ -107,11 +107,11 @@ _port_switch_from_isr:
                 bl      _stats_start_measure_crit_thd
 #endif
 #if CH_DBG_SYSTEM_STATE_CHECK
-                bl      _dbg_check_lock
+                bl      dbg_check_lock
 #endif
                 bl      chSchDoReschedule
 #if CH_DBG_SYSTEM_STATE_CHECK
-                bl      _dbg_check_unlock
+                bl      dbg_check_unlock
 #endif
 #if CH_DBG_STATISTICS
                 bl      _stats_stop_measure_crit_thd
