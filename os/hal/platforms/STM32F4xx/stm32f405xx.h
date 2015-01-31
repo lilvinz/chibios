@@ -7326,11 +7326,14 @@ USB_OTG_HostChannelTypeDef;
 /*  product lines within the same STM32F4 Family                              */
 /******************************************************************************/
 
+/* CHIBIOS FIX */
+#if 0
 /* Aliases for __IRQn */
 #define FMC_IRQn              FSMC_IRQn
 
 /* Aliases for __IRQHandler */
 #define FMC_IRQHandler        FSMC_IRQHandler
+#endif
 
 /**
   * @}
