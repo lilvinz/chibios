@@ -355,17 +355,17 @@ extern "C" {
                 void *link);
   void chIQResetI(InputQueue *iqp);
   msg_t chIQPutI(InputQueue *iqp, uint8_t b);
-  msg_t chIQGetTimeout(InputQueue *iqp, systime_t timeout);
+  msg_t chIQGetTimeout(InputQueue *iqp, systime_t time);
   size_t chIQReadTimeout(InputQueue *iqp, uint8_t *bp,
-                         size_t n, systime_t timeout);
+                         size_t n, systime_t time);
 
   void chOQInit(OutputQueue *oqp, uint8_t *bp, size_t size, qnotify_t onfy,
                 void *link);
   void chOQResetI(OutputQueue *oqp);
-  msg_t chOQPutTimeout(OutputQueue *oqp, uint8_t b, systime_t timeout);
+  msg_t chOQPutTimeout(OutputQueue *oqp, uint8_t b, systime_t time);
   msg_t chOQGetI(OutputQueue *oqp);
   size_t chOQWriteTimeout(OutputQueue *oqp, const uint8_t *bp,
-                          size_t n, systime_t timeout);
+                          size_t n, systime_t time);
 #ifdef __cplusplus
 }
 #endif

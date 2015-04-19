@@ -37,9 +37,6 @@
 
 #include "ch.h"
 
-#include "board.h"
-#include "stm32.h"
-
 /**
  * @brief   Type of an IRQ vector.
  */
@@ -65,17 +62,7 @@ typedef struct {
   irq_vector_t  vector34;
   irq_vector_t  pendsv_vector;
   irq_vector_t  systick_vector;
-#if defined(STM32F40_41xxx)
-  irq_vector_t  vectors[82];
-#elif defined(STM32F401xx)
-  irq_vector_t  vectors[85];
-#elif defined(STM32F411xx)
-  irq_vector_t  vectors[86];
-#elif defined(STM32F429_439xx) || defined(STM32F427_437xx)
   irq_vector_t  vectors[91];
-#else
-#error "STM32F2xx/F4xx device not specified"
-#endif
 } vectors_t;
 
 #if !defined(__DOXYGEN__)
@@ -177,32 +164,22 @@ extern void Vector178(void);
 extern void Vector17C(void);
 extern void Vector180(void);
 extern void Vector184(void);
-#if defined(STM32F401xx) || defined(STM32F411xx) || \
-    defined(STM32F427_437xx) || defined(STM32F429_439xx)
 extern void Vector188(void);
 extern void Vector18C(void);
 extern void Vector190(void);
-#if defined(STM32F411xx) || defined(STM32F427_437xx) || \
-    defined(STM32F429_439xx)
 extern void Vector194(void);
-#if defined(STM32F427_437xx) || defined(STM32F429_439xx)
 extern void Vector198(void);
 extern void Vector19C(void);
 extern void Vector1A0(void);
 extern void Vector1A4(void);
 extern void Vector1A8(void);
-#endif /* defined(STM32F427_437xx) || defined(STM32F429_439xx) */
-#endif /* defined(STM32F411xx) || defined(STM32F427_437xx) ||
-    defined(STM32F429_439xx) */
-#endif /* defined(STM32F401xx) || defined(STM32F411xx) ||
-    defined(STM32F427_437xx) || defined(STM32F429_439xx) */
 #endif
 
 /**
  * @brief   STM32 vectors table.
  */
 #if !defined(__DOXYGEN__)
-__attribute__ ((used, section("vectors")))
+__attribute__ ((section("vectors")))
 #endif
 vectors_t _vectors = {
   &__main_stack_end__,ResetHandler,       NMIVector,          HardFaultVector,
@@ -230,21 +207,9 @@ vectors_t _vectors = {
     Vector150,          Vector154,          Vector158,          Vector15C,
     Vector160,          Vector164,          Vector168,          Vector16C,
     Vector170,          Vector174,          Vector178,          Vector17C,
-    Vector180,          Vector184,
-#if defined(STM32F401xx) || defined(STM32F411xx) || \
-    defined(STM32F427_437xx) || defined(STM32F429_439xx)
-    Vector188,          Vector18C,          Vector190,
-#if defined(STM32F411xx) || defined(STM32F427_437xx) || \
-    defined(STM32F429_439xx)
-    Vector194,
-#if defined(STM32F427_437xx) || defined(STM32F429_439xx)
-    Vector198,          Vector19C,          Vector1A0,
-    Vector1A4,          Vector1A8,
-#endif /* defined(STM32F427_437xx) || defined(STM32F429_439xx) */
-#endif /* defined(STM32F411xx) || defined(STM32F427_437xx) ||
-    defined(STM32F429_439xx) */
-#endif /* defined(STM32F401xx) || defined(STM32F411xx) ||
-    defined(STM32F427_437xx) || defined(STM32F429_439xx) */
+    Vector180,          Vector184,          Vector188,          Vector18C,
+    Vector190,          Vector194,          Vector198,          Vector19C,
+    Vector1A0,          Vector1A4,          Vector1A8
   }
 };
 
@@ -360,24 +325,14 @@ void Vector178(void) __attribute__((weak, alias("_unhandled_exception")));
 void Vector17C(void) __attribute__((weak, alias("_unhandled_exception")));
 void Vector180(void) __attribute__((weak, alias("_unhandled_exception")));
 void Vector184(void) __attribute__((weak, alias("_unhandled_exception")));
-#if defined(STM32F401xx) || defined(STM32F411xx) || \
-    defined(STM32F427_437xx) || defined(STM32F429_439xx)
 void Vector188(void) __attribute__((weak, alias("_unhandled_exception")));
 void Vector18C(void) __attribute__((weak, alias("_unhandled_exception")));
 void Vector190(void) __attribute__((weak, alias("_unhandled_exception")));
-#if defined(STM32F411xx) || defined(STM32F427_437xx) || \
-    defined(STM32F429_439xx)
 void Vector194(void) __attribute__((weak, alias("_unhandled_exception")));
-#if defined(STM32F427_437xx) || defined(STM32F429_439xx)
 void Vector198(void) __attribute__((weak, alias("_unhandled_exception")));
 void Vector19C(void) __attribute__((weak, alias("_unhandled_exception")));
 void Vector1A0(void) __attribute__((weak, alias("_unhandled_exception")));
 void Vector1A4(void) __attribute__((weak, alias("_unhandled_exception")));
 void Vector1A8(void) __attribute__((weak, alias("_unhandled_exception")));
-#endif /* defined(STM32F427_437xx) || defined(STM32F429_439xx) */
-#endif /* defined(STM32F411xx) || defined(STM32F427_437xx) ||
-    defined(STM32F429_439xx) */
-#endif /* defined(STM32F401xx) || defined(STM32F411xx) ||
-    defined(STM32F427_437xx) || defined(STM32F429_439xx) */
 
 /** @} */

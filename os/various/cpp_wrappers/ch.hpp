@@ -202,7 +202,7 @@ namespace chibios_rt {
      *
      * @iclass
      */
-    void setI(systime_t timeout, vtfunc_t vtfunc, void *par);
+    void setI(systime_t time, vtfunc_t vtfunc, void *par);
 
     /**
      * @brief   Resets the timer, if armed.
@@ -539,7 +539,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    static void sleepUntil(systime_t timeout);
+    static void sleepUntil(systime_t time);
 
     /**
      * @brief   Yields the time slot.
@@ -653,7 +653,7 @@ namespace chibios_rt {
      * @api
      */
     static eventmask_t waitOneEventTimeout(eventmask_t ewmask,
-                                           systime_t timeout);
+                                           systime_t time);
 
     /**
      * @brief   Waits for any of the specified events.
@@ -671,7 +671,7 @@ namespace chibios_rt {
      * @api
      */
     static eventmask_t waitAnyEventTimeout(eventmask_t ewmask,
-                                           systime_t timeout);
+                                           systime_t time);
 
     /**
      * @brief   Waits for all the specified event flags then clears them.
@@ -688,7 +688,7 @@ namespace chibios_rt {
      * @api
      */
     static eventmask_t waitAllEventsTimeout(eventmask_t ewmask,
-                                            systime_t timeout);
+                                            systime_t time);
 #endif /* CH_USE_EVENTS_TIMEOUT */
 
     /**
@@ -898,7 +898,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    msg_t waitTimeout(systime_t timeout);
+    msg_t waitTimeout(systime_t time);
 
     /**
      * @brief   Performs a wait operation on a semaphore with timeout
@@ -920,7 +920,7 @@ namespace chibios_rt {
      *
      * @sclass
      */
-    msg_t waitTimeoutS(systime_t timeout);
+    msg_t waitTimeoutS(systime_t time);
 
     /**
      * @brief   Performs a signal operation on a semaphore.
@@ -1055,7 +1055,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    msg_t waitTimeout(systime_t timeout);
+    msg_t waitTimeout(systime_t time);
 
     /**
      * @brief   Wait operation on the binary semaphore.
@@ -1076,7 +1076,7 @@ namespace chibios_rt {
      *
      * @sclass
      */
-    msg_t waitTimeoutS(systime_t timeout);
+    msg_t waitTimeoutS(systime_t time);
 
     /**
      * @brief   Reset operation on the binary semaphore.
@@ -1325,7 +1325,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    msg_t waitTimeout(systime_t timeout);
+    msg_t waitTimeout(systime_t time);
 #endif /* CH_USE_CONDVARS_TIMEOUT */
   };
 #endif /* CH_USE_CONDVARS */
@@ -1576,7 +1576,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    msg_t getTimeout(systime_t timeout);
+    msg_t getTimeout(systime_t time);
 
     /**
      * @brief   Input queue read with timeout.
@@ -1601,7 +1601,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    size_t readTimeout(uint8_t *bp, size_t n, systime_t timeout);
+    size_t readTimeout(uint8_t *bp, size_t n, systime_t time);
   };
 
   /*------------------------------------------------------------------------*
@@ -1748,7 +1748,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    msg_t putTimeout(uint8_t b, systime_t timeout);
+    msg_t putTimeout(uint8_t b, systime_t time);
 
     /**
      * @brief   Output queue read.
@@ -1784,7 +1784,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    size_t writeTimeout(const uint8_t *bp, size_t n, systime_t timeout);
+    size_t writeTimeout(const uint8_t *bp, size_t n, systime_t time);
 };
 
   /*------------------------------------------------------------------------*
@@ -1868,7 +1868,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    msg_t post(msg_t msg, systime_t timeout);
+    msg_t post(msg_t msg, systime_t time);
 
     /**
      * @brief   Posts a message into a mailbox.
@@ -1888,7 +1888,7 @@ namespace chibios_rt {
      *
      * @sclass
      */
-    msg_t postS(msg_t msg, systime_t timeout);
+    msg_t postS(msg_t msg, systime_t time);
 
     /**
      * @brief   Posts a message into a mailbox.
@@ -1923,7 +1923,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    msg_t postAhead(msg_t msg, systime_t timeout);
+    msg_t postAhead(msg_t msg, systime_t time);
 
     /**
      * @brief   Posts an high priority message into a mailbox.
@@ -1943,7 +1943,7 @@ namespace chibios_rt {
      *
      * @sclass
      */
-    msg_t postAheadS(msg_t msg, systime_t timeout);
+    msg_t postAheadS(msg_t msg, systime_t time);
 
     /**
      * @brief   Posts an high priority message into a mailbox.
@@ -1978,7 +1978,7 @@ namespace chibios_rt {
      *
      * @api
      */
-    msg_t fetch(msg_t *msgp, systime_t timeout);
+    msg_t fetch(msg_t *msgp, systime_t time);
 
     /**
      * @brief   Retrieves a message from a mailbox.
@@ -1998,7 +1998,7 @@ namespace chibios_rt {
      *
      * @sclass
      */
-    msg_t fetchS(msg_t *msgp, systime_t timeout);
+    msg_t fetchS(msg_t *msgp, systime_t time);
 
     /**
      * @brief   Retrieves a message from a mailbox.

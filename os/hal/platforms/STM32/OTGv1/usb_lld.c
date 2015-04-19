@@ -533,11 +533,11 @@ static bool_t otg_txfifo_handler(USBDriver *usbp, usbep_t ep) {
                                  n);
       usbp->epc[ep]->in_state->mode.linear.txbuf += n;
     }
-    usbp->epc[ep]->in_state->txcnt += n;
-  }
 #if STM32_USB_OTGFIFO_FILL_BASEPRI
   __set_BASEPRI(0);
 #endif
+    usbp->epc[ep]->in_state->txcnt += n;
+  }
 }
 
 /**
@@ -712,7 +712,6 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
 /* Driver interrupt handlers and threads.                                    */
 /*===========================================================================*/
 
-__attribute__((noreturn))
 static msg_t usb_lld_pump(void *p) {
   USBDriver *usbp = (USBDriver *)p;
   stm32_otg_t *otgp = usbp->otg;

@@ -1,4 +1,4 @@
-*****************************************************************************
+﻿*****************************************************************************
 *** Files Organization                                                    ***
 *****************************************************************************
 
@@ -71,7 +71,32 @@
 *** Releases                                                              ***
 *****************************************************************************
 
+*** 2.6.8 ***
+- FIX: Fixed spurious TC interrupt in STM32 UART (v1 and v2) driver (bug #584).
+- FIX: Fixed invalid checks on STM32L1xx LSI and LSE clocks (bug #583).
+- FIX: Fixed RCC CAN2 macros missing in STM32F1xx platform (bug #582).
+- FIX: Fixed misplaced __set_BASEPRI() in STM32 OTGv1 driver (bug #566).
+- FIX: Fixed typo in code doc of chOQWriteTimeout function (bug #565).
+- FIX: Fixed wrong condition check in MMC_SPI driver (bug #564).
+- FIX: Fixed wrong boolean operators in mutexes module (bug #563).
+- FIX: Fixed missing macro in STM32 USBv1 and OTGv1 drivers (bug #562).
+- FIX: Fixed wrong paths for OLIMEX_STM32-E407_REV_D board (bug #561).
+- FIX: Fixed wrong TIM1/8_CLK on STM32F30x when using PCLK2 with prescaler
+  (bug #557).
+- FIX: Fixed STM32 USARTv1: serial interrupt hang on overrun (and other) error
+  (bug #558).
+
 *** 2.6.7 ***
+- FIX: Fixed random R0 register corruption in Keil ARMCMx port when FPU
+  is enabled (bug #556).
+- FIX: Fixed wrong CORTEX_PRIORITY_PENDSV value in ARMCMx ports (bug #555).
+- FIX: Safer ADC start for STM32F4 and STM32L1.
+- FIX: AT91SAM7 SPI1 undocumented errata on manual CS manipulation.
+- FIX: AT91SAM7 SPI set CS pin mode.
+- FIX: Fixed AT91SAM7 gpio modes.
+- FIX: AT91SAM7 i2c and spi driver using wrong pins for many cpu variants
+- FIX: Fixed STM32 USB driver randomly unable to transition to VALID state
+  (bug #554).
 - FIX: Fixed OLIMEX STM32-E407 board.h errors (FAULT input swap and wrong
   BUSON initial output state) (bug #551).
 - FIX: Fixed STM32F3xx clock init fails if PLL is enabled at startup
@@ -822,7 +847,7 @@
 
 *** 2.0.5 ***
 - FIX: Incorrect AT91SAM7X initialization, thanks Leszek (bug 3075354).
-- FIX: Fixed race condition in function chSchGoSleepTimeoutS, thanks Bal�zs
+- FIX: Fixed race condition in function chSchGoSleepTimeoutS, thanks Balzs
   (bug 3074984).
 - FIX: Fixed race condition in threads creation (bug 3069854).
 - FIX: Fixed broken CH_DBG_ENABLE_STACK_CHECK option in legacy CM3 port (bug

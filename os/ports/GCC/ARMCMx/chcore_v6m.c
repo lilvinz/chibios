@@ -129,4 +129,78 @@ void _port_irq_epilogue(regarm_t lr) {
   }
 }
 
+/**
+ * @brief   Post-IRQ switch code.
+ * @details The switch is performed in thread context then an NMI exception
+ *          is enforced in order to return to the exact point before the
+ *          preemption.
+ */
+#if !defined(__DOXYGEN__)
+__attribute__((naked))
+#endif
+void _port_switch_from_isr(void) {
+
+  dbg_check_lock();
+  chSchDoReschedule();
+  dbg_check_unlock();
+  asm volatile ("_port_exit_from_isr:" : : : "memory");
+#if CORTEX_ALTERNATE_SWITCH
+  SCB_ICSR = ICSR_PENDSVSET;
+  port_unlock();
+#else
+  SCB_ICSR = ICSR_NMIPENDSET;
+#endif
+  /* The following loop should never be executed, the exception will kick in
+     immediately.*/
+  while (TRUE)
+    ;
+}
+
+/**
+ * @brief   Performs a context switch between two threads.
+ * @details This is the most critical code in any port, this function
+ *          is responsible for the context switch between 2 threads.
+ * @note    The implementation of this code affects <b>directly</b> the context
+ *          switch performance so optimize here as much as you can.
+ *
+ * @param[in] ntp       the thread to be switched in
+ * @param[in] otp       the thread to be switched out
+ */
+#if !defined(__DOXYGEN__)
+__attribute__((naked))
+#endif
+void _port_switch(Thread *ntp, Thread *otp) {
+  register struct intctx *r13 asm ("r13");
+
+  asm volatile ("push    {r4, r5, r6, r7, lr}                   \n\t"
+                "mov     r4, r8                                 \n\t"
+                "mov     r5, r9                                 \n\t"
+                "mov     r6, r10                                \n\t"
+                "mov     r7, r11                                \n\t"
+                "push    {r4, r5, r6, r7}" : : : "memory");
+
+  otp->p_ctx.r13 = r13;
+  r13 = ntp->p_ctx.r13;
+
+  asm volatile ("pop     {r4, r5, r6, r7}                       \n\t"
+                "mov     r8, r4                                 \n\t"
+                "mov     r9, r5                                 \n\t"
+                "mov     r10, r6                                \n\t"
+                "mov     r11, r7                                \n\t"
+                "pop     {r4, r5, r6, r7, pc}" : : "r" (r13) : "memory");
+}
+
+/**
+ * @brief   Start a thread by invoking its work function.
+ * @details If the work function returns @p chThdExit() is automatically
+ *          invoked.
+ */
+void _port_thread_start(void) {
+
+  chSysUnlock();
+  asm volatile ("mov     r0, r5                                 \n\t"
+                "blx     r4                                     \n\t"
+                "bl      chThdExit");
+}
+
 /** @} */

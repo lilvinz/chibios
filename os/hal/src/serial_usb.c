@@ -98,14 +98,14 @@ static msg_t gett(void *ip, systime_t timeout) {
   return chIQGetTimeout(&((SerialUSBDriver *)ip)->iqueue, timeout);
 }
 
-static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t timeout) {
+static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t time) {
 
-  return chOQWriteTimeout(&((SerialUSBDriver *)ip)->oqueue, bp, n, timeout);
+  return chOQWriteTimeout(&((SerialUSBDriver *)ip)->oqueue, bp, n, time);
 }
 
-static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t timeout) {
+static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t time) {
 
-  return chIQReadTimeout(&((SerialUSBDriver *)ip)->iqueue, bp, n, timeout);
+  return chIQReadTimeout(&((SerialUSBDriver *)ip)->iqueue, bp, n, time);
 }
 
 static const struct SerialUSBDriverVMT vmt = {

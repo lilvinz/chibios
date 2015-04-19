@@ -184,10 +184,6 @@ void spi_lld_init(void) {
   AT91C_BASE_PIOA->PIO_PDR   = SPI0_MISO | SPI0_MOSI | SPI0_SCK;
   AT91C_BASE_PIOA->PIO_ASR   = SPI0_MISO | SPI0_MOSI | SPI0_SCK;
   AT91C_BASE_PIOA->PIO_PPUDR = SPI0_MISO | SPI0_MOSI | SPI0_SCK;
-  /* Reinit spi device after reconfiguring pins to prevent spurious clocks
-   * before first transfer. This is a silicon error.
-   */
-  spi_init(AT91C_BASE_SPI0);
   AIC_ConfigureIT(AT91C_ID_SPI0,
                   AT91C_AIC_SRCTYPE_HIGH_LEVEL | AT91SAM7_SPI0_PRIORITY,
                   SPI0IrqHandler);
@@ -200,10 +196,6 @@ void spi_lld_init(void) {
   AT91C_BASE_PIOA->PIO_PDR   = SPI1_MISO | SPI1_MOSI | SPI1_SCK;
   AT91C_BASE_PIOA->PIO_BSR   = SPI1_MISO | SPI1_MOSI | SPI1_SCK;
   AT91C_BASE_PIOA->PIO_PPUDR = SPI1_MISO | SPI1_MOSI | SPI1_SCK;
-  /* Reinit spi device after reconfiguring pins to prevent spurious clocks
-   * before first transfer. This is a silicon error.
-   */
-  spi_init(AT91C_BASE_SPI1);
   AIC_ConfigureIT(AT91C_ID_SPI1,
                   AT91C_AIC_SRCTYPE_HIGH_LEVEL | AT91SAM7_SPI1_PRIORITY,
                   SPI1IrqHandler);
@@ -226,6 +218,22 @@ void spi_lld_start(SPIDriver *spip) {
       AT91C_BASE_PMC->PMC_PCER = (1 << AT91C_ID_SPI0);
       /* Enables associated interrupt vector.*/
       AIC_EnableIT(AT91C_ID_SPI0);
+      // Setup the chip select pin
+      // No bug here but control CS0 automatically anyway
+      if (spip->config->ssport == AT91C_BASE_PIOA && spip->config->sspad == SPI0_CS0) {
+    	  AT91C_BASE_PIOA->PIO_PDR = 1 << SPI0_CS0;
+    	  AT91C_BASE_PIOA->PIO_OER = 1 << SPI0_CS0;
+    	  AT91C_BASE_PIOA->PIO_ASR = 1 << SPI0_CS0;
+      } else if (spip->config->ssport) {
+    	  uint32_t		mask;
+
+    	  mask = 1 << spip->config->sspad;
+    	  spip->config->ssport->PIO_SODR = mask;
+    	  spip->config->ssport->PIO_OER = mask;
+    	  spip->config->ssport->PIO_PER = mask;
+    	  spip->config->ssport->PIO_MDDR = mask;
+    	  spip->config->ssport->PIO_PPUDR = mask;
+      }
     }
 #endif
 #if AT91SAM7_SPI_USE_SPI1
@@ -234,11 +242,32 @@ void spi_lld_start(SPIDriver *spip) {
       AT91C_BASE_PMC->PMC_PCER = (1 << AT91C_ID_SPI1);
       /* Enables associated interrupt vector.*/
       AIC_EnableIT(AT91C_ID_SPI1);
+      // Setup the chip select pin
+      // A bug in SPI1 requires that the CS be automatically controlled if it matches the CS0 pin.
+      //	If it is not automatically controlled SPI1 will turn off when data is written.
+      //	If you are not using CS0 make absolutely sure you don't use it as an output pin and
+      //	clear it otherwise you will get the bug in anyway.
+      if (spip->config->ssport == AT91C_BASE_PIOA && spip->config->sspad == SPI1_CS0) {
+    	  AT91C_BASE_PIOA->PIO_PDR = 1 << SPI1_CS0;
+    	  AT91C_BASE_PIOA->PIO_OER = 1 << SPI1_CS0;
+    	  AT91C_BASE_PIOA->PIO_BSR = 1 << SPI1_CS0;
+      } else if (spip->config->ssport) {
+    	  uint32_t		mask;
+
+    	  mask = 1 << spip->config->sspad;
+    	  spip->config->ssport->PIO_SODR = mask;
+    	  spip->config->ssport->PIO_OER = mask;
+    	  spip->config->ssport->PIO_PER = mask;
+    	  spip->config->ssport->PIO_MDDR = mask;
+    	  spip->config->ssport->PIO_PPUDR = mask;
+      }
     }
 #endif
   }
+
   /* Configuration.*/
   spip->spi->SPI_CSR[0] = spip->config->csr;
+
 }
 
 /**
@@ -275,6 +304,7 @@ void spi_lld_stop(SPIDriver *spip) {
  */
 void spi_lld_select(SPIDriver *spip) {
 
+  // Not needed for CS0 but it doesn't hurt either
   palClearPad(spip->config->ssport, spip->config->sspad);
 }
 
@@ -288,6 +318,7 @@ void spi_lld_select(SPIDriver *spip) {
  */
 void spi_lld_unselect(SPIDriver *spip) {
 
+  // Not needed for CS0 but it doesn't hurt either
   palSetPad(spip->config->ssport, spip->config->sspad);
 }
 
