@@ -40,14 +40,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#if !STM32_RTC_IS_CALENDAR
-  uint32_t rtcGetTimeFat(RTCDriver *rtcp);
-#endif
   void rtcGetTimeTm(RTCDriver *rtcp, struct tm *timp);
   void rtcSetTimeTm(RTCDriver *rtcp, struct tm *timp);
   time_t rtcGetTimeUnixSec(RTCDriver *rtcp);
-  uint64_t rtcGetTimeUnixUsec(RTCDriver *rtcp);
   void rtcSetTimeUnixSec(RTCDriver *rtcp, time_t tv_sec);
+  uint64_t rtcGetTimeUnixUsec(RTCDriver *rtcp);
+  uint32_t rtcGetTimeFatFromCounter(RTCDriver *rtcp);
 #ifdef __cplusplus
 }
 #endif
