@@ -172,6 +172,13 @@ int _isatty_r(struct _reent *r, int fd)
   return 1;
 }
 
+/***************************************************************************/
+
+void _tzset_unlocked_r(struct _reent *r)
+{
+  (void)r;
+}
+
 #endif /* PORT_ARCHITECTURE_SIMIA32 */
 
 /*** EOF ***/
