@@ -103,11 +103,11 @@ u32_t sys_arch_sem_wait(sys_sem_t *sem, u32_t time_in) {
 
   chSysLock();
   tmo = timeout > 0 ? (systime_t)timeout : TIME_INFINITE;
-  time_in = chTimeNow();
+  time_in = chTimeNowI();
   if (chSemWaitTimeoutS(*sem, tmo) != RDY_OK)
     time_in = SYS_ARCH_TIMEOUT;
   else
-    time_in = chTimeNow() - time_in;
+    time_in = chTimeNowI() - time_in;
   chSysUnlock();
   return time_in;
 }
@@ -169,11 +169,11 @@ u32_t sys_arch_mbox_fetch(sys_mbox_t *mbox, void **msg, u32_t time_in) {
 
   chSysLock();
   tmo = timeout > 0 ? (systime_t)timeout : TIME_INFINITE;
-  time_in = chTimeNow();
+  time_in = chTimeNowI();
   if (chMBFetchS(*mbox, (msg_t *)msg, tmo) != RDY_OK)
     time_in = SYS_ARCH_TIMEOUT;
   else
-    time_in = chTimeNow() - time_in;
+    time_in = chTimeNowI() - time_in;
   chSysUnlock();
   return time_in;
 }
