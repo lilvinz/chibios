@@ -309,7 +309,7 @@ void chThdSleep(systime_t timeout) {
 void chThdSleepUntil(systime_t timeout) {
 
   chSysLock();
-  if ((timeout -= chTimeNow()) > 0)
+  if ((timeout -= chTimeNowI()) > 0)
     chThdSleepS(timeout);
   chSysUnlock();
 }
