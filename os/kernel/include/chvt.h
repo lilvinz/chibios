@@ -226,6 +226,16 @@ typedef struct {
 #define chTimeElapsedSince(start) (chTimeNow() - (start))
 
 /**
+ * @brief   Returns the elapsed time since the specified start time.
+ *
+ * @param[in] start     start time
+ * @return              The elapsed time.
+ *
+ * @iclass
+ */
+#define chTimeElapsedSinceI(start) (chTimeNowI() - (start))
+
+/**
  * @brief   Checks if the current system time is within the specified time
  *          window.
  * @note    When start==end then the function returns always true because the
@@ -239,7 +249,23 @@ typedef struct {
  * @api
  */
 #define chTimeIsWithin(start, end)                                          \
-  (chTimeElapsedSince(start)z < ((end) - (start)))
+  (chTimeElapsedSince(start) < ((end) - (start)))
+
+/**
+ * @brief   Checks if the current system time is within the specified time
+ *          window.
+ * @note    When start==end then the function returns always true because the
+ *          whole time range is specified.
+ *
+ * @param[in] start     the start of the time window (inclusive)
+ * @param[in] end       the end of the time window (non inclusive)
+ * @retval TRUE         current time within the specified time window.
+ * @retval FALSE        current time not within the specified time window.
+ *
+ * @iclass
+ */
+#define chTimeIsWithinI(start, end)                                         \
+  (chTimeElapsedSinceI(start) < ((end) - (start)))
 /** @} */
 
 extern VTList vtlist;
