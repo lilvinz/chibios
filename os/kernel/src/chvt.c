@@ -133,7 +133,7 @@ systime_t chTimeNow(void) {
 
   systime_t result;
   chSysLock();
-  result = vtlist.vt_systime;
+  result = chTimeNowI();
   chSysUnlock();
   return result;
 }

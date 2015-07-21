@@ -203,6 +203,19 @@ typedef struct {
 }
 
 /**
+ * @brief   Current system time.
+ * @details Returns the number of system ticks since the @p chSysInit()
+ *          invocation.
+ * @note    The counter can reach its maximum and then restart from zero.
+ * @note    This function is designed to work with the @p chThdSleepUntil().
+ *
+ * @return              The system time in ticks.
+ *
+ * @iclass
+ */
+#define chTimeNowI() (vtlist.vt_systime)
+
+/**
  * @brief   Returns the elapsed time since the specified start time.
  *
  * @param[in] start     start time
@@ -226,7 +239,7 @@ typedef struct {
  * @api
  */
 #define chTimeIsWithin(start, end)                                          \
-  (chTimeElapsedSince(start) < ((end) - (start)))
+  (chTimeElapsedSince(start)z < ((end) - (start)))
 /** @} */
 
 extern VTList vtlist;
