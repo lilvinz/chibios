@@ -168,13 +168,13 @@ msg_t macWaitTransmitDescriptor(MACDriver *macp,
   while (((msg = mac_lld_get_transmit_descriptor(macp, tdp)) != RDY_OK) &&
          (timeout > 0)) {
     chSysLock();
-    now = chTimeNow();
+    now = chTimeNowI();
     if ((msg = chSemWaitTimeoutS(&macp->tdsem, timeout)) == RDY_TIMEOUT) {
       chSysUnlock();
       break;
     }
     if (timeout != TIME_INFINITE)
-      timeout -= (chTimeNow() - now);
+      timeout -= (chTimeNowI() - now);
     chSysUnlock();
   }
   return msg;
@@ -227,13 +227,13 @@ msg_t macWaitReceiveDescriptor(MACDriver *macp,
   while (((msg = mac_lld_get_receive_descriptor(macp, rdp)) != RDY_OK) &&
          (timeout > 0)) {
     chSysLock();
-    now = chTimeNow();
+    now = chTimeNowI();
     if ((msg = chSemWaitTimeoutS(&macp->rdsem, timeout)) == RDY_TIMEOUT) {
       chSysUnlock();
       break;
     }
     if (timeout != TIME_INFINITE)
-      timeout -= (chTimeNow() - now);
+      timeout -= (chTimeNowI() - now);
     chSysUnlock();
   }
   return msg;
