@@ -241,7 +241,7 @@ void _trace_init(void) {
  */
 void dbg_trace(Thread *otp) {
 
-  dbg_trace_buffer.tb_ptr->se_time   = chTimeNow();
+  dbg_trace_buffer.tb_ptr->se_time   = chTimeNowI();
   dbg_trace_buffer.tb_ptr->se_tp     = currp;
   dbg_trace_buffer.tb_ptr->se_wtobjp = otp->p_u.wtobjp;
   dbg_trace_buffer.tb_ptr->se_state  = (uint8_t)otp->p_state;
