@@ -203,19 +203,6 @@ typedef struct {
 }
 
 /**
- * @brief   Current system time.
- * @details Returns the number of system ticks since the @p chSysInit()
- *          invocation.
- * @note    The counter can reach its maximum and then restart from zero.
- * @note    This function is designed to work with the @p chThdSleepUntil().
- *
- * @return              The system time in ticks.
- *
- * @api
- */
-#define chTimeNow() (vtlist.vt_systime)
-
-/**
  * @brief   Returns the elapsed time since the specified start time.
  *
  * @param[in] start     start time
@@ -253,6 +240,7 @@ extern "C" {
   void _vt_init(void);
   void chVTSetI(VirtualTimer *vtp, systime_t timeout, vtfunc_t vtfunc, void *par);
   void chVTResetI(VirtualTimer *vtp);
+  systime_t chTimeNow(void);
 #ifdef __cplusplus
 }
 #endif
