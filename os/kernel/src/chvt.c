@@ -118,4 +118,24 @@ void chVTResetI(VirtualTimer *vtp) {
   vtp->vt_func = (vtfunc_t)NULL;
 }
 
+/**
+ * @brief   Current system time.
+ * @details Returns the number of system ticks since the @p chSysInit()
+ *          invocation.
+ * @note    The counter can reach its maximum and then restart from zero.
+ * @note    This function is designed to work with the @p chThdSleepUntil().
+ *
+ * @return              The system time in ticks.
+ *
+ * @api
+ */
+systime_t chTimeNow(void) {
+
+  systime_t result;
+  chSysLock();
+  result = vtlist.vt_systime;
+  chSysUnlock();
+  return result;
+}
+
 /** @} */
