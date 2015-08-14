@@ -81,7 +81,6 @@ void _idle_thread(void *p) {
  *
  * @special
  */
-__attribute__((used))
 void chSysInit(void) {
   static Thread mainthread;
 #if CH_DBG_ENABLE_STACK_CHECK

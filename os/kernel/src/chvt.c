@@ -73,26 +73,26 @@ void _vt_init(void) {
  *
  * @iclass
  */
-void chVTSetI(VirtualTimer *vtp, systime_t timeout, vtfunc_t vtfunc, void *par) {
+void chVTSetI(VirtualTimer *vtp, systime_t time, vtfunc_t vtfunc, void *par) {
   VirtualTimer *p;
 
   chDbgCheckClassI();
-  chDbgCheck((vtp != NULL) && (vtfunc != NULL) && (timeout != TIME_IMMEDIATE),
+  chDbgCheck((vtp != NULL) && (vtfunc != NULL) && (time != TIME_IMMEDIATE),
              "chVTSetI");
 
   vtp->vt_par = par;
   vtp->vt_func = vtfunc;
   p = vtlist.vt_next;
-  while (p->vt_time < timeout) {
-	  timeout -= p->vt_time;
+  while (p->vt_time < time) {
+    time -= p->vt_time;
     p = p->vt_next;
   }
 
   vtp->vt_prev = (vtp->vt_next = p)->vt_prev;
   vtp->vt_prev->vt_next = p->vt_prev = vtp;
-  vtp->vt_time = timeout;
+  vtp->vt_time = time;
   if (p != (void *)&vtlist)
-    p->vt_time -= timeout;
+    p->vt_time -= time;
 }
 
 /**
@@ -116,26 +116,6 @@ void chVTResetI(VirtualTimer *vtp) {
   vtp->vt_prev->vt_next = vtp->vt_next;
   vtp->vt_next->vt_prev = vtp->vt_prev;
   vtp->vt_func = (vtfunc_t)NULL;
-}
-
-/**
- * @brief   Current system time.
- * @details Returns the number of system ticks since the @p chSysInit()
- *          invocation.
- * @note    The counter can reach its maximum and then restart from zero.
- * @note    This function is designed to work with the @p chThdSleepUntil().
- *
- * @return              The system time in ticks.
- *
- * @api
- */
-systime_t chTimeNow(void) {
-
-  systime_t result;
-  chSysLock();
-  result = chTimeNowI();
-  chSysUnlock();
-  return result;
 }
 
 /** @} */

@@ -211,9 +211,9 @@ typedef struct {
  *
  * @return              The system time in ticks.
  *
- * @iclass
+ * @api
  */
-#define chTimeNowI() (vtlist.vt_systime)
+#define chTimeNow() (vtlist.vt_systime)
 
 /**
  * @brief   Returns the elapsed time since the specified start time.
@@ -224,16 +224,6 @@ typedef struct {
  * @api
  */
 #define chTimeElapsedSince(start) (chTimeNow() - (start))
-
-/**
- * @brief   Returns the elapsed time since the specified start time.
- *
- * @param[in] start     start time
- * @return              The elapsed time.
- *
- * @iclass
- */
-#define chTimeElapsedSinceI(start) (chTimeNowI() - (start))
 
 /**
  * @brief   Checks if the current system time is within the specified time
@@ -250,22 +240,6 @@ typedef struct {
  */
 #define chTimeIsWithin(start, end)                                          \
   (chTimeElapsedSince(start) < ((end) - (start)))
-
-/**
- * @brief   Checks if the current system time is within the specified time
- *          window.
- * @note    When start==end then the function returns always true because the
- *          whole time range is specified.
- *
- * @param[in] start     the start of the time window (inclusive)
- * @param[in] end       the end of the time window (non inclusive)
- * @retval TRUE         current time within the specified time window.
- * @retval FALSE        current time not within the specified time window.
- *
- * @iclass
- */
-#define chTimeIsWithinI(start, end)                                         \
-  (chTimeElapsedSinceI(start) < ((end) - (start)))
 /** @} */
 
 extern VTList vtlist;
@@ -277,9 +251,8 @@ extern VTList vtlist;
 extern "C" {
 #endif
   void _vt_init(void);
-  void chVTSetI(VirtualTimer *vtp, systime_t timeout, vtfunc_t vtfunc, void *par);
+  void chVTSetI(VirtualTimer *vtp, systime_t time, vtfunc_t vtfunc, void *par);
   void chVTResetI(VirtualTimer *vtp);
-  systime_t chTimeNow(void);
 #ifdef __cplusplus
 }
 #endif

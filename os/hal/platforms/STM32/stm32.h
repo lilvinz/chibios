@@ -55,8 +55,7 @@
       defined(__DOXYGEN__)
 #include "stm32f10x.h"
 
-#elif defined(STM32F205xx) || defined(STM32F215xx) ||                       \
-	  defined(STM32F207xx) || defined (STM32F217xx)
+#elif defined(STM32F2XX)
 #include "stm32f2xx.h"
 
 #elif defined(STM32F30X)
@@ -65,12 +64,8 @@
 #elif defined(STM32F37X)
 #include "stm32f37x.h"
 
-#elif defined(STM32F405xx) || defined(STM32F415xx) ||                       \
-      defined(STM32F407xx) || defined(STM32F417xx) ||                       \
-      defined(STM32F427xx) || defined(STM32F437xx) ||                       \
-      defined(STM32F429xx) || defined(STM32F439xx) ||                       \
-      defined(STM32F401xC) || defined(STM32F401xE) ||                       \
-      defined(STM32F411xE)
+#elif defined(STM32F401xx)     || defined(STM32F40_41xxx)  ||               \
+      defined(STM32F427_437xx) || defined(STM32F429_439xx)
 #include "stm32f4xx.h"
 
 #elif defined(STM32L1XX_MD)    || defined(STM32L1XX_MDP)   ||               \

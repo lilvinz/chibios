@@ -63,7 +63,6 @@
 /*
  * OS signature in ROM plus debug-related information.
  */
-__attribute__((used))
 ROMCONST chdebug_t ch_debug = {
   "main",
   (uint8_t)0,

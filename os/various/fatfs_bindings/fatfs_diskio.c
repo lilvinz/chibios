@@ -17,12 +17,14 @@
 #if HAL_USE_MMC_SPI
 extern MMCDriver MMCD1;
 #elif HAL_USE_SDC
+extern SDCDriver SDCD1;
 #else
 #error "MMC_SPI or SDC driver must be specified"
 #endif
 
 #if HAL_USE_RTC
 #include "chrtclib.h"
+extern RTCDriver RTCD1;
 #endif
 
 /*-----------------------------------------------------------------------*/
@@ -108,9 +110,9 @@ DSTATUS disk_status (
 
 DRESULT disk_read (
     BYTE drv,        /* Physical drive nmuber (0..) */
-    BYTE *buff,      /* Data buffer to store read data */
+    BYTE *buff,        /* Data buffer to store read data */
     DWORD sector,    /* Sector address (LBA) */
-    UINT count       /* Number of sectors to read (1..255) */
+    BYTE count        /* Number of sectors to read (1..255) */
 )
 {
   switch (drv) {
@@ -151,7 +153,7 @@ DRESULT disk_write (
     BYTE drv,            /* Physical drive nmuber (0..) */
     const BYTE *buff,    /* Data to be written */
     DWORD sector,        /* Sector address (LBA) */
-    UINT count           /* Number of sectors to write (1..255) */
+    BYTE count            /* Number of sectors to write (1..255) */
 )
 {
   switch (drv) {
