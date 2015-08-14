@@ -71,6 +71,23 @@
 *** Releases                                                              ***
 *****************************************************************************
 
+*** 2.6.9 ***
+- NEW: Added files for Core407V board.
+- FIX: Removed call to localtime_r() for non-GNU compilers in chrtclib.c.
+- HAL: Fixed duplicated doxygen tag in STM32F4xx hal_lld.h file (bug #621).
+- HAL: Fixed wrong check in canReceive() (bug #619).
+- HAL: Fixed wrong EXTI[18] vector number on STM32F373 (bug #618).
+- HAL: Fixed wrong check on STM32_LSE_ENABLED definition in STM32L1xx HAL port
+       (bug #617).
+- FIX: SPE-related issue in e200z ports (bug #607).
+- FIX: Fixed wrong macro names in STM32F0xx HAL driver (bug #605).
+- FIX: Fixed wrong macro names in STM32F3xx HAL driver (bug #603).
+- FIX: Fixed STM32 RTCv2 driver missing RTC_SUPPORTS_CALLBACKS macro
+  (bug #602).
+- FIX: Fixed errors in STM32 OTGv1 driver (bug #601).
+- FIX: Fixed issue in DMA drivers when channels share ISRs (bug #597).
+- FIX: Fixed STM32 USARTv1: incorrect txend2_cb callback behaviour (bug #596).
+
 *** 2.6.8 ***
 - FIX: Fixed spurious TC interrupt in STM32 UART (v1 and v2) driver (bug #584).
 - FIX: Fixed invalid checks on STM32L1xx LSI and LSE clocks (bug #583).
