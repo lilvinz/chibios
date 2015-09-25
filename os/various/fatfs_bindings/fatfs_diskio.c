@@ -5,7 +5,6 @@
 /* disk I/O modules and attach it to FatFs module with common interface. */
 /*-----------------------------------------------------------------------*/
 
-#include "ch.h"
 #include "hal.h"
 #include "ffconf.h"
 #include "diskio.h"
@@ -15,14 +14,9 @@
 #endif
 
 #if HAL_USE_MMC_SPI
-extern MMCDriver MMCD1;
 #elif HAL_USE_SDC
 #else
 #error "MMC_SPI or SDC driver must be specified"
-#endif
-
-#if HAL_USE_RTC
-#include "chrtclib.h"
 #endif
 
 /*-----------------------------------------------------------------------*/
@@ -37,12 +31,12 @@ extern MMCDriver MMCD1;
 /* Inidialize a Drive                                                    */
 
 DSTATUS disk_initialize (
-    BYTE drv                /* Physical drive nmuber (0..) */
+    BYTE pdrv                /* Physical drive nmuber (0..) */
 )
 {
   DSTATUS stat;
 
-  switch (drv) {
+  switch (pdrv) {
 #if HAL_USE_MMC_SPI
   case MMC:
     stat = 0;
@@ -63,7 +57,7 @@ DSTATUS disk_initialize (
     return stat;
 #endif
   }
-  return STA_NODISK;
+  return STA_NOINIT;
 }
 
 
@@ -72,12 +66,12 @@ DSTATUS disk_initialize (
 /* Return Disk Status                                                    */
 
 DSTATUS disk_status (
-    BYTE drv        /* Physical drive nmuber (0..) */
+    BYTE pdrv        /* Physical drive nmuber (0..) */
 )
 {
   DSTATUS stat;
 
-  switch (drv) {
+  switch (pdrv) {
 #if HAL_USE_MMC_SPI
   case MMC:
     stat = 0;
@@ -98,7 +92,7 @@ DSTATUS disk_status (
     return stat;
 #endif
   }
-  return STA_NODISK;
+  return STA_NOINIT;
 }
 
 
@@ -107,13 +101,13 @@ DSTATUS disk_status (
 /* Read Sector(s)                                                        */
 
 DRESULT disk_read (
-    BYTE drv,        /* Physical drive nmuber (0..) */
-    BYTE *buff,      /* Data buffer to store read data */
+    BYTE pdrv,        /* Physical drive nmuber (0..) */
+    BYTE *buff,        /* Data buffer to store read data */
     DWORD sector,    /* Sector address (LBA) */
-    UINT count       /* Number of sectors to read (1..255) */
+    UINT count        /* Number of sectors to read (1..255) */
 )
 {
-  switch (drv) {
+  switch (pdrv) {
 #if HAL_USE_MMC_SPI
   case MMC:
     if (blkGetDriverState(&MMCD1) != BLK_READY)
@@ -146,15 +140,15 @@ DRESULT disk_read (
 /*-----------------------------------------------------------------------*/
 /* Write Sector(s)                                                       */
 
-#if _READONLY == 0
+#if _USE_WRITE
 DRESULT disk_write (
-    BYTE drv,            /* Physical drive nmuber (0..) */
+    BYTE pdrv,            /* Physical drive nmuber (0..) */
     const BYTE *buff,    /* Data to be written */
     DWORD sector,        /* Sector address (LBA) */
-    UINT count           /* Number of sectors to write (1..255) */
+    UINT count            /* Number of sectors to write (1..255) */
 )
 {
-  switch (drv) {
+  switch (pdrv) {
 #if HAL_USE_MMC_SPI
   case MMC:
     if (blkGetDriverState(&MMCD1) != BLK_READY)
@@ -183,23 +177,24 @@ DRESULT disk_write (
   }
   return RES_PARERR;
 }
-#endif /* _READONLY */
+#endif /* _USE_WRITE */
 
 
 
 /*-----------------------------------------------------------------------*/
 /* Miscellaneous Functions                                               */
 
+#if _USE_IOCTL
 DRESULT disk_ioctl (
-    BYTE drv,        /* Physical drive nmuber (0..) */
-    BYTE ctrl,        /* Control code */
+    BYTE pdrv,        /* Physical drive nmuber (0..) */
+    BYTE cmd,        /* Control code */
     void *buff        /* Buffer to send/receive control data */
 )
 {
-  switch (drv) {
+  switch (pdrv) {
 #if HAL_USE_MMC_SPI
   case MMC:
-    switch (ctrl) {
+    switch (cmd) {
     case CTRL_SYNC:
         return RES_OK;
     case GET_SECTOR_SIZE:
@@ -215,7 +210,7 @@ DRESULT disk_ioctl (
     }
 #else
   case SDC:
-    switch (ctrl) {
+    switch (cmd) {
     case CTRL_SYNC:
         return RES_OK;
     case GET_SECTOR_COUNT:
@@ -239,14 +234,15 @@ DRESULT disk_ioctl (
   }
   return RES_PARERR;
 }
+#endif /* _USE_IOCTL */
 
 DWORD get_fattime(void) {
 #if HAL_USE_RTC
-    return rtcGetTimeFat(&RTCD1);
+    RTCDateTime timespec;
+
+    rtcGetTime(&RTCD1, &timespec);
+    return rtcConvertDateTimeToFAT(&timespec);
 #else
     return ((uint32_t)0 | (1 << 16)) | (1 << 21); /* wrong but valid time */
 #endif
 }
-
-
-

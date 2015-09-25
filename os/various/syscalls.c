@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -66,12 +66,7 @@
 #include "hal.h"
 #endif
 
-#if !defined(CH_ARCHITECTURE_SIMIA32)
-
-#ifndef __errno_r
-#include <sys/reent.h>
-#define __errno_r(reent) reent->_errno
-#endif
+#if !defined(PORT_ARCHITECTURE_SIMIA32)
 
 /***************************************************************************/
 
@@ -137,10 +132,10 @@ int _close_r(struct _reent *r, int file)
 
 caddr_t _sbrk_r(struct _reent *r, int incr)
 {
-#if CH_USE_MEMCORE
+#if CH_CFG_USE_MEMCORE
   void *p;
 
-  chDbgCheck(incr > 0, "_sbrk_r");
+  chDbgCheck(incr >= 0);
 
   p = chCoreAlloc((size_t)incr);
   if (p == NULL) {
@@ -184,6 +179,6 @@ void _tzset_unlocked_r(struct _reent *r)
   (void)r;
 }
 
-#endif /* CH_ARCHITECTURE_SIMIA32 */
+#endif /* PORT_ARCHITECTURE_SIMIA32 */
 
 /*** EOF ***/
