@@ -9,7 +9,7 @@
   *          This file contains:
   *           - Data structures and the address mapping for all peripherals
   *           - Peripheral's registers declarations and bits definition
-  *           - Macros to access peripheral’s registers hardware
+  *           - Macros to access peripheralï¿½s registers hardware
   *
   ******************************************************************************
   * @attention
@@ -127,7 +127,8 @@ typedef enum
   */
 
 #include "core_cm0.h"            /* Cortex-M0 processor and core peripherals */
-#include "system_stm32f0xx.h"    /* STM32F0xx System Header */
+/* CHIBIOS FIX */
+//#include "system_stm32f0xx.h"    /* STM32F0xx System Header */
 #include <stdint.h>
 
 /** @addtogroup Peripheral_registers_structures
@@ -377,6 +378,8 @@ typedef struct
   * @brief General Purpose I/O
   */
 
+/* CHIBIOS FIX */
+#if 0
 typedef struct
 {
   __IO uint32_t MODER;        /*!< GPIO port mode register,               Address offset: 0x00 */
@@ -390,6 +393,7 @@ typedef struct
   __IO uint32_t AFR[2];       /*!< GPIO alternate function low register,  Address offset: 0x20-0x24 */
   __IO uint32_t BRR;          /*!< GPIO bit reset register,               Address offset: 0x28 */
 }GPIO_TypeDef;
+#endif
 
 /**
   * @brief SysTem Configuration
