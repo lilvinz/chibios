@@ -483,9 +483,12 @@
 #define STM32_USART6_TX_DMA_CHN 0x00000000
 
 /* USB attributes.*/
-#define STM32_HAS_USB           TRUE
-#define STM32_HAS_OTG1          FALSE
-#define STM32_HAS_OTG2          FALSE
+#define STM32_HAS_USB                       TRUE
+#define STM32_USB_ACCESS_SCHEME_2x16        FALSE
+#define STM32_USB_PMA_SIZE                  512
+#define STM32_USB_HAS_BCDR                  FALSE
+#define STM32_HAS_OTG1                      FALSE
+#define STM32_HAS_OTG2                      FALSE
 /** @} */
 #endif /* defined(STM32F10X_MD) */
 
@@ -633,9 +636,12 @@
 #define STM32_USART6_TX_DMA_CHN 0x00000000
 
 /* USB attributes.*/
-#define STM32_HAS_USB           TRUE
-#define STM32_HAS_OTG1          FALSE
-#define STM32_HAS_OTG2          FALSE
+#define STM32_HAS_USB                       TRUE
+#define STM32_USB_ACCESS_SCHEME_2x16        FALSE
+#define STM32_USB_PMA_SIZE                  512
+#define STM32_USB_HAS_BCDR                  FALSE
+#define STM32_HAS_OTG1                      FALSE
+#define STM32_HAS_OTG2                      FALSE
 /** @} */
 #endif /* defined(STM32F10X_HD) */
 
@@ -787,9 +793,12 @@
 #define STM32_USART6_TX_DMA_CHN 0x00000000
 
 /* USB attributes.*/
-#define STM32_HAS_USB           TRUE
-#define STM32_HAS_OTG1          FALSE
-#define STM32_HAS_OTG2          FALSE
+#define STM32_HAS_USB                       TRUE
+#define STM32_USB_ACCESS_SCHEME_2x16        FALSE
+#define STM32_USB_PMA_SIZE                  512
+#define STM32_USB_HAS_BCDR                  FALSE
+#define STM32_HAS_OTG1                      FALSE
+#define STM32_HAS_OTG2                      FALSE
 /** @} */
 #endif /* defined(STM32F10X_XL) */
 
