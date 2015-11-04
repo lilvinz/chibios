@@ -175,6 +175,13 @@ void stm32_clock_init(void) {
     ;                                       /* Waits until HSI14 is stable. */
 #endif
 
+#if STM32_HSI48_ENABLED
+  /* HSI48 activation.*/
+  RCC->CR2 |= RCC_CR2_HSI48ON;
+  while (!(RCC->CR2 & RCC_CR2_HSI48RDY))
+    ;                                       /* Waits until HSI48 is stable. */
+#endif
+
 #if STM32_LSI_ENABLED
   /* LSI activation.*/
   RCC->CSR |= RCC_CSR_LSION;
@@ -186,8 +193,11 @@ void stm32_clock_init(void) {
   RCC->CFGR  = STM32_MCOSEL | STM32_PLLMUL | STM32_PLLSRC |
                STM32_ADCPRE | STM32_PPRE   | STM32_HPRE;
   RCC->CFGR2 = STM32_PREDIV;
-  RCC->CFGR3 = STM32_ADCSW  | STM32_CECSW  | STM32_I2C1SW |
-               STM32_USART1SW;
+#if STM32_CECSW == STM32_CECSW_OFF
+  RCC->CFGR3 = STM32_USBSW  | STM32_I2C1SW | STM32_USART1SW;
+#else
+  RCC->CFGR3 = STM32_USBSW  | STM32_CECSW  | STM32_I2C1SW | STM32_USART1SW;
+#endif
 
 #if STM32_ACTIVATE_PLL
   /* PLL activation.*/

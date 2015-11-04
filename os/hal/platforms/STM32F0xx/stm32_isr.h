@@ -66,6 +66,15 @@
 #define STM32_USART2_NUMBER         28
 /** @} */
 
+/*
+ * USB units.
+ */
+#define STM32_USB1_LP_HANDLER       VectorBC
+#define STM32_USB1_LP_NUMBER        31
+#define STM32_USB1_HP_HANDLER       VectorBC
+#define STM32_USB1_HP_NUMBER        31
+/** @} */
+
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
 /*===========================================================================*/

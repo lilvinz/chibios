@@ -526,6 +526,31 @@
 #define rccResetUSART2() rccResetAPB1(RCC_APB1RSTR_USART2RST)
 
 /**
+ * @brief   Enables the USB peripheral clock.
+ *
+ * @param[in] lp        low power enable flag
+ *
+ * @api
+ */
+#define rccEnableUSB(lp) rccEnableAPB1(RCC_APB1ENR_USBEN, lp)
+
+/**
+ * @brief   Disables the USB peripheral clock.
+ *
+ * @param[in] lp        low power enable flag
+ *
+ * @api
+ */
+#define rccDisableUSB(lp) rccDisableAPB1(RCC_APB1ENR_USBEN, lp)
+
+/**
+ * @brief   Resets the USB peripheral.
+ *
+ * @api
+ */
+#define rccResetUSB() rccResetAPB1(RCC_APB1RSTR_USBRST)
+
+/**
  * @brief   Enables the CRC peripheral clock.
  * @note    The @p lp parameter is ignored in this family.
  *
