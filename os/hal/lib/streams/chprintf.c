@@ -118,7 +118,38 @@ static char *ftoa(char *p, double num, unsigned long precision) {
  *
  * @api
  */
-int chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap) {
+int chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap)
+{
+  return chvprintft((BaseChannel*)chp, TIME_INFINITE, fmt, ap);
+}
+
+/**
+ * @brief   System formatted output function with timeout.
+ * @details This function implements a minimal @p vprintf()-like functionality
+ *          with output on a @p BaseChannel.
+ *          The general parameters format is: %[-][width|*][.precision|*][l|L]p.
+ *          The following parameter types (p) are supported:
+ *          - <b>x</b> hexadecimal integer.
+ *          - <b>X</b> hexadecimal long.
+ *          - <b>o</b> octal integer.
+ *          - <b>O</b> octal long.
+ *          - <b>d</b> decimal signed integer.
+ *          - <b>D</b> decimal signed long.
+ *          - <b>u</b> decimal unsigned integer.
+ *          - <b>U</b> decimal unsigned long.
+ *          - <b>c</b> character.
+ *          - <b>s</b> string.
+ *          .
+ *
+ * @param[in] chp           pointer to a @p BaseChannel implementing object
+ * @param[in] char_timeout  character timeout specifier
+ * @param[in] fmt           formatting string
+ * @param[in] ap            list of parameters
+ *
+ * @api
+ */
+int chvprintft(BaseChannel *chp, systime_t char_timeout, const char *fmt,
+        va_list ap) {
   char *p, *s, c, filler;
   int i, precision, width;
   int n = 0;
@@ -136,7 +167,10 @@ int chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap) {
     if (c == 0)
       return n;
     if (c != '%') {
-      streamPut(chp, (uint8_t)c);
+      if (char_timeout == TIME_INFINITE)
+        streamPut((BaseSequentialStream*)chp, (uint8_t)c);
+      else
+        chnPutTimeout(chp, (uint8_t)c, char_timeout);
       n++;
       continue;
     }
@@ -254,22 +288,34 @@ unsigned_common:
       width = -width;
     if (width < 0) {
       if (*s == '-' && filler == '0') {
-        streamPut(chp, (uint8_t)*s++);
+        if (char_timeout == TIME_INFINITE)
+          streamPut((BaseSequentialStream*)chp, (uint8_t)*s++);
+        else
+          chnPutTimeout(chp, (uint8_t)*s++, char_timeout);
         n++;
         i--;
       }
       do {
-        streamPut(chp, (uint8_t)filler);
+        if (char_timeout == TIME_INFINITE)
+          streamPut((BaseSequentialStream*)chp, (uint8_t)filler);
+        else
+          chnPutTimeout(chp, (uint8_t)filler, char_timeout);
         n++;
       } while (++width != 0);
     }
     while (--i >= 0) {
-      streamPut(chp, (uint8_t)*s++);
+      if (char_timeout == TIME_INFINITE)
+        streamPut((BaseSequentialStream*)chp, (uint8_t)*s++);
+      else
+        chnPutTimeout(chp, (uint8_t)*s++, char_timeout);
       n++;
     }
 
     while (width) {
-      streamPut(chp, (uint8_t)filler);
+      if (char_timeout == TIME_INFINITE)
+        streamPut((BaseSequentialStream*)chp, (uint8_t)filler);
+      else
+        chnPutTimeout(chp, (uint8_t)filler, char_timeout);
       n++;
       width--;
     }
@@ -304,7 +350,42 @@ int chprintf(BaseSequentialStream *chp, const char *fmt, ...) {
   int formatted_bytes;
 
   va_start(ap, fmt);
-  formatted_bytes = chvprintf(chp, fmt, ap);
+  formatted_bytes = chvprintft((BaseChannel*)chp, TIME_INFINITE, fmt, ap);
+  va_end(ap);
+
+  return formatted_bytes;
+}
+
+/**
+ * @brief   System formatted output function.
+ * @details This function implements a minimal @p printf() like functionality
+ *          with output on a @p BaseSequentialStream.
+ *          The general parameters format is: %[-][width|*][.precision|*][l|L]p.
+ *          The following parameter types (p) are supported:
+ *          - <b>x</b> hexadecimal integer.
+ *          - <b>X</b> hexadecimal long.
+ *          - <b>o</b> octal integer.
+ *          - <b>O</b> octal long.
+ *          - <b>d</b> decimal signed integer.
+ *          - <b>D</b> decimal signed long.
+ *          - <b>u</b> decimal unsigned integer.
+ *          - <b>U</b> decimal unsigned long.
+ *          - <b>c</b> character.
+ *          - <b>s</b> string.
+ *          .
+ *
+ * @param[in] chp           pointer to a @p BaseChannel implementing object
+ * @param[in] char_timeout  character timeout specifier
+ * @param[in] fmt           formatting string
+ *
+ * @api
+ */
+int chprintft(BaseChannel *chp, systime_t char_timeout, const char *fmt, ...) {
+  va_list ap;
+  int formatted_bytes;
+
+  va_start(ap, fmt);
+  formatted_bytes = chvprintft(chp, char_timeout, fmt, ap);
   va_end(ap);
 
   return formatted_bytes;
