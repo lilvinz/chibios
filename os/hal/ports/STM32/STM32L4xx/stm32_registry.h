@@ -61,6 +61,14 @@
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
+#define STM32_CAN1_TX_HANDLER               Vector8C
+#define STM32_CAN1_RX0_HANDLER              Vector90
+#define STM32_CAN1_RX1_HANDLER              Vector94
+#define STM32_CAN1_SCE_HANDLER              Vector98
+#define STM32_CAN1_TX_NUMBER                19
+#define STM32_CAN1_RX0_NUMBER               20
+#define STM32_CAN1_RX1_NUMBER               21
+#define STM32_CAN1_SCE_NUMBER               22
 
 /* DAC attributes.*/
 #define STM32_HAS_DAC1_CH1                  TRUE
@@ -233,7 +241,7 @@
 #define STM32_SPI2_TX_DMA_MSK               (STM32_DMA_STREAM_ID_MSK(1, 5))
 #define STM32_SPI2_TX_DMA_CHN               0x00010000
 
-#define STM32_HAS_SPI3                      FALSE
+#define STM32_HAS_SPI3                      TRUE
 #define STM32_SPI3_SUPPORTS_I2S             FALSE
 #define STM32_SPI3_RX_DMA_MSK               (STM32_DMA_STREAM_ID_MSK(2, 1))
 #define STM32_SPI3_RX_DMA_CHN               0x00000003
@@ -385,6 +393,10 @@
 #define STM32_OTG1_NUMBER                   67
 
 #define STM32_HAS_OTG2                      FALSE
+
+/* IWDG attributes.*/
+#define STM32_HAS_IWDG                      TRUE
+#define STM32_IWDG_IS_WINDOWED              TRUE
 
 /* LTDC attributes.*/
 #define STM32_HAS_LTDC                      FALSE

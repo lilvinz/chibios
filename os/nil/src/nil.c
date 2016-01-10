@@ -101,7 +101,7 @@ void chSysInit(void) {
   tp->stklim  = THD_IDLE_BASE;
 #endif
 
-  /* Runs the highest priority thread, the current one becomes the null
+  /* Runs the highest priority thread, the current one becomes the idle
      thread.*/
   nil.current = nil.next = nil.threads;
   port_switch(nil.current, tp);
@@ -270,7 +270,7 @@ void chSysUnconditionalUnlock(void) {
  *
  * @xclass
  */
-syssts_t chSysGetStatusAndLockX(void)  {
+syssts_t chSysGetStatusAndLockX(void) {
 
   syssts_t sts = port_get_irq_status();
   if (port_irq_enabled(sts)) {

@@ -872,6 +872,11 @@
  * @brief   Maximum APB2 clock frequency.
  */
 #define STM32_PCLK2_MAX             80000000
+
+/**
+ * @brief   Maximum ADC clock frequency.
+ */
+#define STM32_ADCCLK_MAX            80000000
 /** @} */
 
 /**
@@ -906,6 +911,7 @@
 #define STM32_PLLR_MIN              8000000
 #define STM32_PCLK1_MAX             26000000
 #define STM32_PCLK2_MAX             26000000
+#define STM32_ADCCLK_MAX            26000000
 
 #define STM32_0WS_THRESHOLD         6000000
 #define STM32_1WS_THRESHOLD         12000000
@@ -1509,7 +1515,7 @@
 /**
  * @brief   STM32_PLLSAI1QEN field.
  */
-#if (STM32_CLK48SEL == STM32_CLK48SEL_PLL) || defined(__DOXYGEN__)
+#if (STM32_CLK48SEL == STM32_CLK48SEL_PLLSAI1) || defined(__DOXYGEN__)
 #define STM32_PLLSAI1QEN            (1 << 20)
 #else
 #define STM32_PLLSAI1QEN            (0 << 20)
@@ -1929,7 +1935,7 @@
 #if (STM32_CLK48SEL == STM32_CLK48SEL_NOCLK) || defined(__DOXYGEN__)
 #define STM32_48CLK                 0
 #elif STM32_CLK48SEL == STM32_CLK48SEL_PLLSAI1
-#define STM32_48CLK                 (STM32_PLLVCO / STM32_PLLSAI1Q_VALUE)
+#define STM32_48CLK                 (STM32_PLLSAI1VCO / STM32_PLLSAI1Q_VALUE)
 #elif STM32_CLK48SEL == STM32_CLK48SEL_PLL
 #define STM32_48CLK                 (STM32_PLLVCO / STM32_PLLQ_VALUE)
 #elif STM32_CLK48SEL == STM32_CLK48SEL_MSI
@@ -1978,7 +1984,7 @@
 /**
  * @brief   SDMMC frequency.
  */
-#define STM32_SDMMCCLK               STM32_48CLK
+#define STM32_SDMMCCLK              STM32_48CLK
 
 /**
  * @brief   Clock of timers connected to APB1
