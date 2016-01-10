@@ -46,13 +46,6 @@
  */
 #define CORTEX_PRIORITY_BITS    4
 
-/**
- * @brief   Number of interrupt vectors.
- * @note    This number does not include the 16 system vectors and must be
- *          rounded to a multiple of 8.
- */
-#define CORTEX_NUM_VECTORS      96
-
 /* The following code is not processed when the file is included from an
    asm module.*/
 #if !defined(_FROM_ASM_)
@@ -67,6 +60,28 @@
     !defined(STM32F401xC) && !defined(STM32F401xE) &&                       \
     !defined(STM32F411xE)
 #include "board.h"
+#endif
+
+/**
+ * @brief   Number of interrupt vectors.
+ * @note    This number does not include the 16 system vectors.
+ */
+#if defined(STM32F405xx) || defined(STM32F415xx) || defined(STM32F407xx) || \
+    defined(STM32F417xx)
+#define CORTEX_NUM_VECTORS      82
+#elif defined(STM32F401xC) || defined(STM32F401xE)
+#define CORTEX_NUM_VECTORS      85
+#elif defined(STM32F411xE)
+#define CORTEX_NUM_VECTORS      86
+#elif defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || \
+    defined(STM32F439xx)
+#define CORTEX_NUM_VECTORS      91
+#elif defined(STM32F469xx) || defined(STM32F479xx)
+#define CORTEX_NUM_VECTORS      93
+#elif defined(STM32F446xx)
+#define CORTEX_NUM_VECTORS      97
+#elif defined(STM32F410Tx) || defined(STM32F410Cx) || defined(STM32F410Rx)
+#define CORTEX_NUM_VECTORS      98
 #endif
 
 /* Including the device CMSIS header. Note, we are not using the definitions
