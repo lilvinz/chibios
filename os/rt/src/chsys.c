@@ -90,6 +90,7 @@ static void _idle_thread(void *p) {
  *
  * @special
  */
+__attribute__((used))
 void chSysInit(void) {
 #if CH_DBG_ENABLE_STACK_CHECK == TRUE
   extern stkalign_t __main_thread_stack_base__;
