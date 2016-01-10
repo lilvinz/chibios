@@ -97,6 +97,7 @@ static void _idle_thread(void *p) {
  *
  * @special
  */
+__attribute__((used))
 void chSysInit(void) {
   extern stkalign_t __main_thread_stack_base__;
 
