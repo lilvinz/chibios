@@ -394,6 +394,7 @@ void chThdYield(void) {
  *
  * @api
  */
+__attribute__((used))
 void chThdExit(msg_t msg) {
 
   chSysLock();
