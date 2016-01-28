@@ -77,7 +77,6 @@
 /*
  * OS signature in ROM plus debug-related information.
  */
-__attribute__((used))
 ROMCONST chdebug_t ch_debug = {
   {'m', 'a', 'i', 'n'},
   (uint8_t)0,
