@@ -76,6 +76,18 @@
 - RT:  Removed the p_msg field from the thread_t structure saving a
        msg_t-sized field from the structure. Messages now use a new field
        into the p_u union. Now synchronous messages are even faster.
+- VAR: Fixed missing time convesion in lwIP arch module (bug #696)
+       (backported to 2.6.10, 3.0.5 and 16.1.2).
+- HAL: Fixed incorrect handling of TIME_IMMEDIATE in the HAL buffer queues
+       (bug #695)(backported to 16.1.2).
+- NIL: Fixed NIL_CFG_USE_EVENTS not properly checked in NIL (bug #694)
+       (backported to 3.0.5 and 16.1.1).
+- RT:  Fixed ISR statistics are not updated from a critical zone in RT
+       (bug #693)(backported to 3.0.5 and 16.1.1).
+- NIL: Fixed NIL test suite calls I and S functions outside critical zone
+       (bug #692)(backported to 3.0.5 and 16.1.1).
+- NIL: Fixed protocol violation in NIL OSAL (bug #691)(backported to
+       3.0.5 and 16.1.1).
 - HAL: Fixed error in HAL buffer queues (bug #689)(backported to 16.1.1).
 - RT:  Fixed tm_stop - best case bug (bug #688)(backported to 16.1.1
        and 3.0.5).
