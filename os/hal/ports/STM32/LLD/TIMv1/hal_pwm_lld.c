@@ -90,6 +90,30 @@ PWMDriver PWMD8;
 PWMDriver PWMD9;
 #endif
 
+/**
+ * @brief   PWMD15 driver identifier.
+ * @note    The driver PWMD15 allocates the timer TIM15 when enabled.
+ */
+#if STM32_PWM_USE_TIM15 || defined(__DOXYGEN__)
+PWMDriver PWMD15;
+#endif
+
+/**
+ * @brief   PWMD16 driver identifier.
+ * @note    The driver PWMD16 allocates the timer TIM16 when enabled.
+ */
+#if STM32_PWM_USE_TIM16 || defined(__DOXYGEN__)
+PWMDriver PWMD16;
+#endif
+
+/**
+ * @brief   PWMD17 driver identifier.
+ * @note    The driver PWMD17 allocates the timer TIM17 when enabled.
+ */
+#if STM32_PWM_USE_TIM17 || defined(__DOXYGEN__)
+PWMDriver PWMD17;
+#endif
+
 /*===========================================================================*/
 /* Driver local variables and types.                                         */
 /*===========================================================================*/
@@ -102,13 +126,13 @@ PWMDriver PWMD9;
 /* Driver interrupt handlers.                                                */
 /*===========================================================================*/
 
-#if STM32_PWM_USE_TIM1 || defined(__DOXYGEN__)
-#if !defined(STM32_TIM1_SUPPRESS_ISR)
+#if STM32_PWM_USE_TIM1 || STM32_PWM_USE_TIM16 || defined(__DOXYGEN__)
+#if !defined(STM32_TIM1_SUPPRESS_ISR) || !defined(STM32_TIM16_SUPPRESS_ISR)
 #if !defined(STM32_TIM1_UP_HANDLER)
 #error "STM32_TIM1_UP_HANDLER not defined"
 #endif
 /**
- * @brief   TIM1 update interrupt handler.
+ * @brief   TIM1 update / TIM16 interrupt handler.
  * @note    It is assumed that this interrupt is only activated if the callback
  *          pointer is not equal to @p NULL in order to not perform an extra
  *          check in a potentially critical interrupt handler.
@@ -119,11 +143,20 @@ OSAL_IRQ_HANDLER(STM32_TIM1_UP_HANDLER) {
 
   OSAL_IRQ_PROLOGUE();
 
+#if STM32_PWM_USE_TIM1 && !defined(STM32_TIM1_SUPPRESS_ISR)
   pwm_lld_serve_interrupt(&PWMD1);
+#endif
+#if STM32_PWM_USE_TIM16 && !defined(STM32_TIM16_SUPPRESS_ISR)
+  pwm_lld_serve_interrupt(&PWMD16);
+#endif
 
   OSAL_IRQ_EPILOGUE();
 }
+#endif /* !defined(STM32_TIM1_SUPPRESS_ISR) || !defined(STM32_TIM16_SUPPRESS_ISR) */
+#endif /* STM32_PWM_USE_TIM1 || STM32_PWM_USE_TIM16 */
 
+#if STM32_PWM_USE_TIM1 || defined(__DOXYGEN__)
+#if !defined(STM32_TIM1_SUPPRESS_ISR)
 #if !defined(STM32_TIM1_CC_HANDLER)
 #error "STM32_TIM1_CC_HANDLER not defined"
 #endif
@@ -139,12 +172,14 @@ OSAL_IRQ_HANDLER(STM32_TIM1_CC_HANDLER) {
 
   OSAL_IRQ_PROLOGUE();
 
+#if STM32_PWM_USE_TIM1
   pwm_lld_serve_interrupt(&PWMD1);
+#endif
 
   OSAL_IRQ_EPILOGUE();
 }
-#endif /* !defined(STM32_TIM1_SUPPRESS_ISR) */
-#endif /* STM32_PWM_USE_TIM1 */
+#endif /* !defined(STM32_TIM1_SUPPRESS_ISR) || !defined(STM32_TIM16_SUPPRESS_ISR) */
+#endif /* STM32_PWM_USE_TIM1 || STM32_PWM_USE_TIM16 */
 
 #if STM32_PWM_USE_TIM2 || defined(__DOXYGEN__)
 #if !defined(STM32_TIM2_SUPPRESS_ISR)
@@ -293,7 +328,49 @@ OSAL_IRQ_HANDLER(STM32_TIM9_HANDLER) {
   OSAL_IRQ_EPILOGUE();
 }
 #endif /* !defined(STM32_TIM9_SUPPRESS_ISR) */
-#endif /* STM32_PWM_USE_TIM9 */
+#endif /* STM32_PWM_USE_TIM15 */
+
+#if STM32_PWM_USE_TIM15 || defined(__DOXYGEN__)
+#if !defined(STM32_TIM15_SUPPRESS_ISR)
+#if !defined(STM32_TIM15_HANDLER)
+#error "STM32_TIM15_HANDLER not defined"
+#endif
+/**
+ * @brief   TIM15 interrupt handler.
+ *
+ * @isr
+ */
+OSAL_IRQ_HANDLER(STM32_TIM15_HANDLER) {
+
+  OSAL_IRQ_PROLOGUE();
+
+  pwm_lld_serve_interrupt(&PWMD15);
+
+  OSAL_IRQ_EPILOGUE();
+}
+#endif /* !defined(STM32_TIM15_SUPPRESS_ISR) */
+#endif /* STM32_PWM_USE_TIM15 */
+
+#if STM32_PWM_USE_TIM17 || defined(__DOXYGEN__)
+#if !defined(STM32_TIM17_SUPPRESS_ISR)
+#if !defined(STM32_TIM17_HANDLER)
+#error "STM32_TIM17_HANDLER not defined"
+#endif
+/**
+ * @brief   TIM17 interrupt handler.
+ *
+ * @isr
+ */
+OSAL_IRQ_HANDLER(STM32_TIM17_HANDLER) {
+
+  OSAL_IRQ_PROLOGUE();
+
+  pwm_lld_serve_interrupt(&PWMD17);
+
+  OSAL_IRQ_EPILOGUE();
+}
+#endif /* !defined(STM32_TIM17_SUPPRESS_ISR) */
+#endif /* STM32_PWM_USE_TIM17 */
 
 /*===========================================================================*/
 /* Driver exported functions.                                                */
@@ -353,6 +430,27 @@ void pwm_lld_init(void) {
   pwmObjectInit(&PWMD9);
   PWMD9.channels = STM32_TIM9_CHANNELS;
   PWMD9.tim = STM32_TIM9;
+#endif
+
+#if STM32_PWM_USE_TIM15
+  /* Driver initialization.*/
+  pwmObjectInit(&PWMD15);
+  PWMD15.channels = STM32_TIM15_CHANNELS;
+  PWMD15.tim = STM32_TIM15;
+#endif
+
+#if STM32_PWM_USE_TIM16
+  /* Driver initialization.*/
+  pwmObjectInit(&PWMD16);
+  PWMD16.channels = STM32_TIM16_CHANNELS;
+  PWMD16.tim = STM32_TIM16;
+#endif
+
+#if STM32_PWM_USE_TIM17
+  /* Driver initialization.*/
+  pwmObjectInit(&PWMD17);
+  PWMD17.channels = STM32_TIM17_CHANNELS;
+  PWMD17.tim = STM32_TIM17;
 #endif
 }
 
@@ -478,6 +576,51 @@ void pwm_lld_start(PWMDriver *pwmp) {
     }
 #endif
 
+#if STM32_PWM_USE_TIM15
+    if (&PWMD15 == pwmp) {
+      rccEnableTIM15(true);
+      rccResetTIM15();
+#if !defined(STM32_TIM15_SUPPRESS_ISR)
+      nvicEnableVector(STM32_TIM15_NUMBER, STM32_PWM_TIM15_IRQ_PRIORITY);
+#endif
+#if defined(STM32_TIM15CLK)
+      pwmp->clock = STM32_TIM15CLK;
+#else
+      pwmp->clock = STM32_TIMCLK2;
+#endif
+    }
+#endif
+
+#if STM32_PWM_USE_TIM16
+    if (&PWMD16 == pwmp) {
+      rccEnableTIM16(true);
+      rccResetTIM16();
+#if !defined(STM32_TIM16_SUPPRESS_ISR)
+      nvicEnableVector(STM32_TIM16_NUMBER, STM32_PWM_TIM16_IRQ_PRIORITY);
+#endif
+#if defined(STM32_TIM16CLK)
+      pwmp->clock = STM32_TIM16CLK;
+#else
+      pwmp->clock = STM32_TIMCLK2;
+#endif
+    }
+#endif
+
+#if STM32_PWM_USE_TIM17
+    if (&PWMD17 == pwmp) {
+      rccEnableTIM17(true);
+      rccResetTIM17();
+#if !defined(STM32_TIM17_SUPPRESS_ISR)
+      nvicEnableVector(STM32_TIM17_NUMBER, STM32_PWM_TIM17_IRQ_PRIORITY);
+#endif
+#if defined(STM32_TIM17CLK)
+      pwmp->clock = STM32_TIM17CLK;
+#else
+      pwmp->clock = STM32_TIMCLK2;
+#endif
+    }
+#endif
+
     /* All channels configured in PWM1 mode with preload enabled and will
        stay that way until the driver is stopped.*/
     pwmp->tim->CCMR1 = STM32_TIM_CCMR1_OC1M(6) | STM32_TIM_CCMR1_OC1PE |
@@ -557,15 +700,24 @@ void pwm_lld_start(PWMDriver *pwmp) {
     ;
   }
 #if STM32_PWM_USE_ADVANCED
-#if STM32_PWM_USE_TIM1 && !STM32_PWM_USE_TIM8
-  if (&PWMD1 == pwmp) {
+  if (false
+#if STM32_PWM_USE_TIM1
+          || &PWMD1 == pwmp
 #endif
-#if !STM32_PWM_USE_TIM1 && STM32_PWM_USE_TIM8
-  if (&PWMD8 == pwmp) {
+#if STM32_PWM_USE_TIM8
+          || &PWMD8 == pwmp
 #endif
-#if STM32_PWM_USE_TIM1 && STM32_PWM_USE_TIM8
-  if ((&PWMD1 == pwmp) || (&PWMD8 == pwmp)) {
+#if STM32_PWM_USE_TIM15
+          || &PWMD15 == pwmp
 #endif
+#if STM32_PWM_USE_TIM16
+          || &PWMD16 == pwmp
+#endif
+#if STM32_PWM_USE_TIM17
+          || &PWMD17 == pwmp
+#endif
+          )
+  {
     switch (pwmp->config->channels[0].mode & PWM_COMPLEMENTARY_OUTPUT_MASK) {
     case PWM_COMPLEMENTARY_OUTPUT_ACTIVE_LOW:
       ccer |= STM32_TIM_CCER_CC1NP;
@@ -604,7 +756,8 @@ void pwm_lld_start(PWMDriver *pwmp) {
   pwmp->tim->SR    = 0;                     /* Clear pending IRQs.          */
   pwmp->tim->DIER  = pwmp->config->dier &   /* DMA-related DIER settings.   */
                      ~STM32_TIM_DIER_IRQ_MASK;
-#if STM32_PWM_USE_TIM1 || STM32_PWM_USE_TIM8
+#if STM32_PWM_USE_TIM1 || STM32_PWM_USE_TIM8 || \
+    STM32_PWM_USE_TIM15 || STM32_PWM_USE_TIM16 || STM32_PWM_USE_TIM17
 #if STM32_PWM_USE_ADVANCED
   pwmp->tim->BDTR  = pwmp->config->bdtr | STM32_TIM_BDTR_MOE;
 #else
@@ -630,7 +783,8 @@ void pwm_lld_stop(PWMDriver *pwmp) {
     pwmp->tim->CR1  = 0;                    /* Timer disabled.              */
     pwmp->tim->DIER = 0;                    /* All IRQs disabled.           */
     pwmp->tim->SR   = 0;                    /* Clear eventual pending IRQs. */
-#if STM32_PWM_USE_TIM1 || STM32_PWM_USE_TIM8
+#if STM32_PWM_USE_TIM1 || STM32_PWM_USE_TIM8 || \
+    STM32_PWM_USE_TIM15 || STM32_PWM_USE_TIM16 || STM32_PWM_USE_TIM17
     pwmp->tim->BDTR  = 0;
 #endif
 
@@ -696,6 +850,33 @@ void pwm_lld_stop(PWMDriver *pwmp) {
       nvicDisableVector(STM32_TIM9_NUMBER);
 #endif
       rccDisableTIM9();
+    }
+#endif
+
+#if STM32_PWM_USE_TIM15
+    if (&PWMD15 == pwmp) {
+#if !defined(STM32_TIM15_SUPPRESS_ISR)
+      nvicDisableVector(STM32_TIM15_NUMBER);
+#endif
+      rccDisableTIM15();
+    }
+#endif
+
+#if STM32_PWM_USE_TIM16
+    if (&PWMD16 == pwmp) {
+#if !defined(STM32_TIM16_SUPPRESS_ISR)
+      nvicDisableVector(STM32_TIM16_NUMBER);
+#endif
+      rccDisableTIM16();
+    }
+#endif
+
+#if STM32_PWM_USE_TIM17
+    if (&PWMD17 == pwmp) {
+#if !defined(STM32_TIM17_SUPPRESS_ISR)
+      nvicDisableVector(STM32_TIM17_NUMBER);
+#endif
+      rccDisableTIM17();
     }
 #endif
   }
