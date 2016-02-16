@@ -35,7 +35,10 @@
  * (Re)define if needed base address constants supplied in ST's CMSIS
  */
 #if (defined(STM32F427xx) || defined(STM32F437xx) || \
-     defined(STM32F429xx) || defined(STM32F439xx))
+     defined(STM32F429xx) || defined(STM32F439xx) || \
+     defined(STM32L471xx) || defined(STM32L475xx) || \
+     defined(STM32L476xx) || defined(STM32L485xx) || \
+     defined(STM32L486xx))
   #if !defined(FSMC_Bank1_R_BASE)
   #define FSMC_Bank1_R_BASE               (FMC_R_BASE + 0x0000)
   #endif
