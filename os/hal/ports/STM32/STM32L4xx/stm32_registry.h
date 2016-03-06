@@ -212,7 +212,7 @@
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
 #define STM32_RTC_HAS_SUBSECONDS            TRUE
-#define STM32_RTC_HAS_PERIODIC_WAKEUPS      FALSE
+#define STM32_RTC_HAS_PERIODIC_WAKEUPS      TRUE
 #define STM32_RTC_NUM_ALARMS                2
 #define STM32_RTC_HAS_INTERRUPTS            FALSE
 
@@ -253,6 +253,8 @@
 #define STM32_HAS_SPI6                      FALSE
 
 /* TIM attributes.*/
+#define STM32_TIM_MAX_CHANNELS              6
+
 #define STM32_HAS_TIM1                      TRUE
 #define STM32_TIM1_IS_32BITS                FALSE
 #define STM32_TIM1_CHANNELS                 4
@@ -405,7 +407,7 @@
 #define STM32_HAS_DMA2D                     FALSE
 
 /* FSMC attributes.*/
-#define STM32_HAS_FSMC                      FALSE
+#define STM32_HAS_FSMC                      TRUE
 
 /* CRC attributes.*/
 #define STM32_HAS_CRC                       TRUE
