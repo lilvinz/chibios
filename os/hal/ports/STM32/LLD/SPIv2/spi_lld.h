@@ -196,6 +196,15 @@
 #endif
 
 /**
+ * @brief   Enables the SPI BIDIMODE support.
+ * @details If set to @p TRUE the support for BIDIMODE CR1 bit is included.
+ * @note    The default is @p FALSE.
+ */
+#if !defined(STM32_SPI_USE_BIDIMODE) || defined(__DOXYGEN__)
+#define STM32_SPI_USE_BIDIMODE              FALSE
+#endif
+
+/**
  * @brief   SPI DMA error hook.
  */
 #if !defined(STM32_SPI_DMA_ERROR_HOOK) || defined(__DOXYGEN__)
@@ -488,10 +497,6 @@ struct SPIDriver {
    * @brief   TX DMA mode bit mask.
    */
   uint32_t                  txdmamode;
-  /**
-   * @brief   Frame size in bytes.
-   */
-  size_t                    fsize;
 };
 
 /*===========================================================================*/

@@ -144,6 +144,15 @@ static void spi_lld_serve_rx_interrupt(SPIDriver *spip, uint32_t flags) {
   dmaStreamDisable(spip->dmatx);
   dmaStreamDisable(spip->dmarx);
 
+#if STM32_SPI_USE_BIDIMODE
+  spip->spi->CR1 |= SPI_CR1_BIDIOE;
+
+  /* Errors reset sequence. It is required becaue BIDIOE could cause extra
+     clock pulses after DMA stopped reading.*/
+  (void)spip->spi->DR;
+  (void)spip->spi->SR;
+#endif
+
   /* Portable SPI ISR code defined in the high level driver, note, it is
      a macro.*/
   _spi_isr_code(spip);
@@ -303,6 +312,12 @@ void spi_lld_init(void) {
 void spi_lld_start(SPIDriver *spip) {
   uint32_t ds;
 
+#if STM32_SPI_USE_BIDIMODE
+  osalDbgAssert(!(((spip->spi->CR1 & SPI_CR1_BIDIMODE) == 0) ^^
+                  ((spip->spi->CR1 & SPI_CR1_BIDIOE) == 0)),
+                "BIDIOE not set");
+#endif
+
   /* If in stopped state then enables the SPI and DMA clocks.*/
   if (spip->state == SPI_STOP) {
 #if STM32_SPI_USE_SPI1
@@ -415,7 +430,6 @@ void spi_lld_start(SPIDriver *spip) {
                       STM32_DMA_CR_PSIZE_BYTE | STM32_DMA_CR_MSIZE_BYTE;
     spip->txdmamode = (spip->txdmamode & ~STM32_DMA_CR_SIZE_MASK) |
                       STM32_DMA_CR_PSIZE_BYTE | STM32_DMA_CR_MSIZE_BYTE;
-    spip->fsize     = sizeof (uint8_t);
   }
   else {
     /* Frame width is larger than 8 bits.*/
@@ -423,7 +437,6 @@ void spi_lld_start(SPIDriver *spip) {
                       STM32_DMA_CR_PSIZE_HWORD | STM32_DMA_CR_MSIZE_HWORD;
     spip->txdmamode = (spip->txdmamode & ~STM32_DMA_CR_SIZE_MASK) |
                       STM32_DMA_CR_PSIZE_HWORD | STM32_DMA_CR_MSIZE_HWORD;
-    spip->fsize     = sizeof (uint16_t);
   }
 
   /* SPI setup and enable.*/
@@ -517,6 +530,13 @@ void spi_lld_unselect(SPIDriver *spip) {
  */
 void spi_lld_ignore(SPIDriver *spip, size_t n) {
 
+#if STM32_SPI_USE_BIDIMODE
+  if ((spip->spi->CR1 & SPI_CR1_BIDIMODE) != 0) {
+    osalDbgAssert((spip->spi->CR1 & SPI_CR1_BIDIOE) != 0,
+                  "BIDIOE not set");
+  }
+#endif
+
   dmaStreamSetMemory0(spip->dmarx, &dummyrx);
   dmaStreamSetTransactionSize(spip->dmarx, n);
   dmaStreamSetMode(spip->dmarx, spip->rxdmamode);
@@ -547,6 +567,11 @@ void spi_lld_ignore(SPIDriver *spip, size_t n) {
 void spi_lld_exchange(SPIDriver *spip, size_t n,
                       const void *txbuf, void *rxbuf) {
 
+#if STM32_SPI_USE_BIDIMODE
+  osalDbgAssert((spip->spi->CR1 & SPI_CR1_BIDIMODE) == 0,
+                "spiExchange() not possible with BIDIMODE");
+#endif
+
   dmaStreamSetMemory0(spip->dmarx, rxbuf);
   dmaStreamSetTransactionSize(spip->dmarx, n);
   dmaStreamSetMode(spip->dmarx, spip->rxdmamode | STM32_DMA_CR_MINC);
@@ -574,16 +599,23 @@ void spi_lld_exchange(SPIDriver *spip, size_t n,
  */
 void spi_lld_send(SPIDriver *spip, size_t n, const void *txbuf) {
 
-  dmaStreamSetMemory0(spip->dmarx, &dummyrx);
-  dmaStreamSetTransactionSize(spip->dmarx, n);
-  dmaStreamSetMode(spip->dmarx, spip->rxdmamode);
+#if STM32_SPI_USE_BIDIMODE
+  if ((spip->spi->CR1 & SPI_CR1_BIDIMODE) != 0) {
+    osalDbgAssert((spip->spi->CR1 & SPI_CR1_BIDIOE) != 0,
+                  "BIDIOE not set");
+  }
+#endif
 
-  dmaStreamSetMemory0(spip->dmatx, txbuf);
-  dmaStreamSetTransactionSize(spip->dmatx, n);
-  dmaStreamSetMode(spip->dmatx, spip->txdmamode | STM32_DMA_CR_MINC);
+    dmaStreamSetMemory0(spip->dmarx, &dummyrx);
+    dmaStreamSetTransactionSize(spip->dmarx, n);
+    dmaStreamSetMode(spip->dmarx, spip->rxdmamode);
 
-  dmaStreamEnable(spip->dmarx);
-  dmaStreamEnable(spip->dmatx);
+    dmaStreamSetMemory0(spip->dmatx, txbuf);
+    dmaStreamSetTransactionSize(spip->dmatx, n);
+    dmaStreamSetMode(spip->dmatx, spip->txdmamode | STM32_DMA_CR_MINC);
+
+    dmaStreamEnable(spip->dmarx);
+    dmaStreamEnable(spip->dmatx);
 }
 
 /**
@@ -601,16 +633,36 @@ void spi_lld_send(SPIDriver *spip, size_t n, const void *txbuf) {
  */
 void spi_lld_receive(SPIDriver *spip, size_t n, void *rxbuf) {
 
-  dmaStreamSetMemory0(spip->dmarx, rxbuf);
-  dmaStreamSetTransactionSize(spip->dmarx, n);
-  dmaStreamSetMode(spip->dmarx, spip->rxdmamode | STM32_DMA_CR_MINC);
+#if STM32_SPI_USE_BIDIMODE
+  if ((spip->spi->CR1 & SPI_CR1_BIDIMODE) != 0) {
 
-  dmaStreamSetMemory0(spip->dmatx, &dummytx);
-  dmaStreamSetTransactionSize(spip->dmatx, n);
-  dmaStreamSetMode(spip->dmatx, spip->txdmamode);
+    osalDbgAssert((spip->spi->CR1 & SPI_CR1_BIDIOE) != 0,
+                  "BIDIOE not set");
 
-  dmaStreamEnable(spip->dmarx);
-  dmaStreamEnable(spip->dmatx);
+    dmaStreamSetMemory0(spip->dmarx, rxbuf);
+    dmaStreamSetTransactionSize(spip->dmarx, n);
+    dmaStreamSetMode(spip->dmarx, spip->rxdmamode | STM32_DMA_CR_MINC);
+
+    dmaStreamEnable(spip->dmarx);
+
+    spip->spi->CR1 &= ~SPI_CR1_BIDIOE;
+  }
+  else {
+#else
+    dmaStreamSetMemory0(spip->dmarx, rxbuf);
+    dmaStreamSetTransactionSize(spip->dmarx, n);
+    dmaStreamSetMode(spip->dmarx, spip->rxdmamode | STM32_DMA_CR_MINC);
+
+    dmaStreamSetMemory0(spip->dmatx, &dummytx);
+    dmaStreamSetTransactionSize(spip->dmatx, n);
+    dmaStreamSetMode(spip->dmatx, spip->txdmamode);
+
+    dmaStreamEnable(spip->dmarx);
+    dmaStreamEnable(spip->dmatx);
+#endif
+#if STM32_SPI_USE_BIDIMODE
+  }
+#endif
 }
 
 /**
@@ -626,6 +678,11 @@ void spi_lld_receive(SPIDriver *spip, size_t n, void *rxbuf) {
  * @return              The received data frame from the SPI bus.
  */
 uint16_t spi_lld_polled_exchange(SPIDriver *spip, uint16_t frame) {
+
+#if STM32_SPI_USE_BIDIMODE
+  osalDbgAssert((spip->spi->CR1 & SPI_CR1_BIDIMODE) == 0,
+                "spiPolledExchange() not possible with BIDIMODE");
+#endif
 
   /*
    * Data register must be accessed with the appropriate data size.
