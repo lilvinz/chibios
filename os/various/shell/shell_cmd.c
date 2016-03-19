@@ -148,7 +148,13 @@ static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
   tp = chRegFirstThread();
   do {
     chprintf(chp, "%08lx %08lx %08lx %4lu %4lu %9s %12s\r\n",
-             (uint32_t)tp->stklimit, (uint32_t)tp->ctx.sp, (uint32_t)tp,
+             (uint32_t)tp->stklimit,
+#ifdef PORT_ARCHITECTURE_SIMIA32
+             (uint32_t)tp->ctx.uc.uc_stack.ss_sp,
+#else
+             (uint32_t)tp->ctx.sp,
+#endif
+             (uint32_t)tp,
              (uint32_t)tp->refs - 1, (uint32_t)tp->prio, states[tp->state],
              tp->name == NULL ? "" : tp->name);
     tp = chRegNextThread(tp);

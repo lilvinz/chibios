@@ -46,15 +46,17 @@
 #endif
 
 #if !defined(SHELL_CMD_MEM_ENABLED) || defined(__DOXYGEN__)
-#define SHELL_CMD_MEM_ENABLED               TRUE
+#define SHELL_CMD_MEM_ENABLED \
+        (CH_CFG_USE_MEMCORE == TRUE) && \
+        (CH_CFG_USE_HEAP == TRUE)
 #endif
 
 #if !defined(SHELL_CMD_THREADS_ENABLED) || defined(__DOXYGEN__)
-#define SHELL_CMD_THREADS_ENABLED           TRUE
+#define SHELL_CMD_THREADS_ENABLED           CH_CFG_USE_REGISTRY
 #endif
 
 #if !defined(SHELL_CMD_TEST_ENABLED) || defined(__DOXYGEN__)
-#define SHELL_CMD_TEST_ENABLED              TRUE
+#define SHELL_CMD_TEST_ENABLED              FALSE
 #endif
 
 #if !defined(SHELL_CMD_TEST_WA_SIZE) || defined(__DOXYGEN__)
