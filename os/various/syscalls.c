@@ -54,7 +54,6 @@
 *  15.11.09  gdisirio   Added read and write handling
 ****************************************************************************/
 
-
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -65,8 +64,6 @@
 #if defined(STDOUT_SD) || defined(STDIN_SD)
 #include "hal.h"
 #endif
-
-#if !defined(PORT_ARCHITECTURE_SIMIA32)
 
 /***************************************************************************/
 
@@ -171,14 +168,5 @@ int _isatty_r(struct _reent *r, int fd)
 
   return 1;
 }
-
-/***************************************************************************/
-
-void _tzset_unlocked_r(struct _reent *r)
-{
-  (void)r;
-}
-
-#endif /* PORT_ARCHITECTURE_SIMIA32 */
 
 /*** EOF ***/

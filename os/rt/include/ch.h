@@ -39,7 +39,7 @@
 /**
  * @brief   Stable release flag.
  */
-#define CH_KERNEL_STABLE        0
+#define CH_KERNEL_STABLE        1
 
 /**
  * @name    ChibiOS/RT version identification
@@ -48,35 +48,29 @@
 /**
  * @brief   Kernel version string.
  */
-#define CH_KERNEL_VERSION       "4.0.0"
+#define CH_KERNEL_VERSION       "3.1.4"
 
 /**
  * @brief   Kernel version major number.
  */
-#define CH_KERNEL_MAJOR         4
+#define CH_KERNEL_MAJOR         3
 
 /**
  * @brief   Kernel version minor number.
  */
-#define CH_KERNEL_MINOR         0
+#define CH_KERNEL_MINOR         1
 
 /**
  * @brief   Kernel version patch number.
  */
-#define CH_KERNEL_PATCH         0
+#define CH_KERNEL_PATCH         4
 /** @} */
 
 /* Core headers.*/
 #include "chtypes.h"
 #include "chconf.h"
-
-#if !defined(_CHIBIOS_RT_CONF_)
-#error "invalid configuration file"
-#endif
-
 #include "chlicense.h"
 #include "chsystypes.h"
-#include "chalign.h"
 #include "chcore.h"
 #include "chdebug.h"
 #include "chtm.h"
@@ -101,10 +95,6 @@
 #include "chdynamic.h"
 #include "chqueues.h"
 #include "chstreams.h"
-
-#if !defined(_CHIBIOS_RT_CONF_)
-#error "missing or wrong configuration file"
-#endif
 
 #endif /* _CH_H_ */
 
