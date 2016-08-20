@@ -195,7 +195,13 @@ struct ch_thread {
    * @note    All the fields declared in this union are only valid in the
    *          specified state or condition and are thus volatile.
    */
+#ifdef PORT_ARCHITECTURE_SIMIA32
+  /* This is to work around an issue with gcc when accessing a union from both
+   * C as well as C++ compile units in combination with -flto. */
+  struct {
+#else
   union {
+#endif
     /**
      * @brief   Thread wakeup code.
      * @note    This field contains the low level message sent to the thread
