@@ -22,24 +22,68 @@
  * @{
  */
 
-#ifndef _HAL_COMMUNITY_H_
-#define _HAL_COMMUNITY_H_
+#ifndef HAL_COMMUNITY_H
+#define HAL_COMMUNITY_H
+
+
+/* Error checks on the configuration header file.*/
+#if !defined(HAL_USE_CRC)
+#define HAL_USE_CRC                         FALSE
+#endif
+
+#if !defined(HAL_USE_EEPROM)
+#define HAL_USE_EEPROM                      FALSE
+#endif
+
+#if !defined(HAL_USE_EICU)
+#define HAL_USE_EICU                        FALSE
+#endif
+
+#if !defined(HAL_USE_NAND)
+#define HAL_USE_NAND                        FALSE
+#endif
+
+#if !defined(HAL_USE_ONEWIRE)
+#define HAL_USE_ONEWIRE                     FALSE
+#endif
+
+#if !defined(HAL_USE_QEI)
+#define HAL_USE_QEI                        FALSE
+#endif
+
+#if !defined(HAL_USE_RNG)
+#define HAL_USE_RNG                         FALSE
+#endif
+
+#if !defined(HAL_USE_TIMCAP)
+#define HAL_USE_TIMCAP                      FALSE
+#endif
+
+#if !defined(HAL_USE_USBH)
+#define HAL_USE_USBH                        FALSE
+#endif
+
+#if !defined(HAL_USE_USB_HID)
+#define HAL_USE_USB_HID                     FALSE
+#endif
 
 /* Abstract interfaces.*/
 
 /* Shared headers.*/
 
 /* Normal drivers.*/
-#include "nand.h"
-#include "eicu.h"
-#include "rng.h"
-#include "usbh.h"
-#include "timcap.h"
+#include "hal_nand.h"
+#include "hal_eicu.h"
+#include "hal_rng.h"
+#include "hal_usbh.h"
+#include "hal_timcap.h"
+#include "hal_qei.h"
 
 /* Complex drivers.*/
-#include "onewire.h"
-#include "crc.h"
-#include "eeprom.h"
+#include "hal_onewire.h"
+#include "hal_crc.h"
+#include "hal_eeprom.h"
+#include "hal_usb_hid.h"
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -73,6 +117,6 @@ extern "C" {
 }
 #endif
 
-#endif /* _HAL_COMMUNITY_H_ */
+#endif /* HAL_COMMUNITY_H */
 
 /** @} */

@@ -15,8 +15,8 @@
 */
 
 /**
- * @file    STM32F3xx/adc_lld.c
- * @brief   STM32F3xx ADC subsystem low level driver source.
+ * @file    STM32/LLD/ADCv3/adc_lld.c
+ * @brief   STM32 ADC subsystem low level driver source.
  *
  * @addtogroup ADC
  * @{
@@ -520,11 +520,20 @@ void adc_lld_init(void) {
 
   /* ADC units pre-initializations.*/
 #if defined(STM32F3XX)
+#if STM32_HAS_ADC1 && STM32_HAS_ADC2
 #if STM32_ADC_USE_ADC1 || STM32_ADC_USE_ADC2
   rccEnableADC12(FALSE);
   rccResetADC12();
   ADC1_2_COMMON->CCR = STM32_ADC_ADC12_CLOCK_MODE | ADC_DMA_MDMA;
   rccDisableADC12(FALSE);
+#endif
+#else
+#if STM32_ADC_USE_ADC1
+  rccEnableADC12(FALSE);
+  rccResetADC12();
+  ADC1_COMMON->CCR = STM32_ADC_ADC12_CLOCK_MODE | ADC_DMA_MDMA;
+  rccDisableADC12(FALSE);
+#endif
 #endif
 #if STM32_ADC_USE_ADC3 || STM32_ADC_USE_ADC4
   rccEnableADC34(FALSE);
@@ -696,7 +705,7 @@ void adc_lld_stop(ADCDriver *adcp) {
 #endif
 
 #if STM32_ADC_USE_ADC2
-    if (&ADCD1 == adcp) {
+    if (&ADCD2 == adcp) {
 #if defined(STM32F3XX)
       /* Resetting CCR options except default ones.*/
       adcp->adcc->CCR = STM32_ADC_ADC12_CLOCK_MODE | ADC_DMA_MDMA;
@@ -706,7 +715,7 @@ void adc_lld_stop(ADCDriver *adcp) {
 #endif
 
 #if STM32_ADC_USE_ADC3
-    if (&ADCD1 == adcp) {
+    if (&ADCD3 == adcp) {
 #if defined(STM32F3XX)
       /* Resetting CCR options except default ones.*/
       adcp->adcc->CCR = STM32_ADC_ADC34_CLOCK_MODE | ADC_DMA_MDMA;
@@ -716,7 +725,7 @@ void adc_lld_stop(ADCDriver *adcp) {
 #endif
 
 #if STM32_ADC_USE_ADC4
-    if (&ADCD1 == adcp) {
+    if (&ADCD4 == adcp) {
 #if defined(STM32F3XX)
       /* Resetting CCR options except default ones.*/
       adcp->adcc->CCR = STM32_ADC_ADC34_CLOCK_MODE | ADC_DMA_MDMA;
@@ -726,12 +735,17 @@ void adc_lld_stop(ADCDriver *adcp) {
 #endif
 
 #if defined(STM32F3XX)
+#if STM32_HAS_ADC1 || STM32_HAS_ADC2
     if ((clkmask & 0x3) == 0) {
       rccDisableADC12(FALSE);
     }
+#endif
+
+#if STM32_HAS_ADC3 || STM32_HAS_ADC4
     if ((clkmask & 0xC) == 0) {
       rccDisableADC34(FALSE);
     }
+#endif
 #endif
 
 #if defined(STM32L4XX)
@@ -855,7 +869,7 @@ void adc_lld_stop_conversion(ADCDriver *adcp) {
  */
 void adcSTM32EnableVREF(ADCDriver *adcp) {
 
-  adcp->adcc->CCR |= ADC_CCR_VBATEN;
+  adcp->adcc->CCR |= ADC_CCR_VREFEN;
 }
 
 /**
@@ -870,7 +884,7 @@ void adcSTM32EnableVREF(ADCDriver *adcp) {
  */
 void adcSTM32DisableVREF(ADCDriver *adcp) {
 
-  adcp->adcc->CCR &= ~ADC_CCR_VBATEN;
+  adcp->adcc->CCR &= ~ADC_CCR_VREFEN;
 }
 
 /**

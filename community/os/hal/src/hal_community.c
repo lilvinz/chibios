@@ -15,7 +15,7 @@
 */
 
 /**
- * @file    hal.c
+ * @file    hal_community.c
  * @brief   HAL subsystem code.
  *
  * @addtogroup HAL
@@ -75,6 +75,10 @@ void halCommunityInit(void) {
 
 #if HAL_USE_TIMCAP || defined(__DOXYGEN__)
   timcapInit();
+#endif
+
+#if HAL_USE_QEI || defined(__DOXYGEN__)
+  qeiInit();
 #endif
 }
 

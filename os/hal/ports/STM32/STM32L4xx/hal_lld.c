@@ -88,8 +88,7 @@ static void hal_lld_backup_domain_init(void) {
  */
 void hal_lld_init(void) {
 
-  /* Reset of all peripherals. AHB3 is not reseted because it could have
-     been initialized in the board initialization file (board.c).*/
+  /* Reset of all peripherals.*/
   rccResetAHB1(~0);
   rccResetAHB2(~0);
   rccResetAHB3(~0);
@@ -109,12 +108,24 @@ void hal_lld_init(void) {
 
   /* Programmable voltage detector enable.*/
 #if STM32_PVD_ENABLE
-  PWR->CR1 |= PWR_CR1_PVDE | (STM32_PLS & STM32_PLS_MASK);
+  PWR->CR2 = PWR_CR2_PVDE | (STM32_PLS & STM32_PLS_MASK);
+#else
+  PWR->CR2 = 0;
 #endif /* STM32_PVD_ENABLE */
+
+  /* Enabling independent VDDUSB.*/
+#if HAL_USE_USB
+  PWR->CR2 |= PWR_CR2_USV;
+#endif /* HAL_USE_USB */
+
+  /* Enabling independent VDDIO2 required by GPIOG.*/
+#if STM32_HAS_GPIOG
+  PWR->CR2 |= PWR_CR2_IOSV;
+#endif /* STM32_HAS_GPIOG */
 }
 
 /**
- * @brief   STM32F2xx clocks and PLL initialization.
+ * @brief   STM32L4xx clocks and PLL initialization.
  * @note    All the involved constants come from the file @p board.h.
  * @note    This function should be invoked just after the system reset.
  *
@@ -124,12 +135,14 @@ void stm32_clock_init(void) {
 
 #if !STM32_NO_INIT
   /* PWR clock enable.*/
-  RCC->APB1ENR1 = RCC_APB1ENR1_PWREN;
+  RCC->APB1ENR1 |= RCC_APB1ENR1_PWREN;
 
   /* Initial clocks setup and wait for MSI stabilization, the MSI clock is
      always enabled because it is the fall back clock when PLL the fails.
      Trim fields are not altered from reset values.*/
-  RCC->CR = RCC_CR_MSION | STM32_MSIRANGE_4M;
+
+  /* MSIRANGE can be set only when MSI is OFF or READY.*/
+  RCC->CR = RCC_CR_MSION;
   while ((RCC->CR & RCC_CR_MSIRDY) == 0)
     ;                                       /* Wait until MSI is stable.    */
 
@@ -188,6 +201,18 @@ void stm32_clock_init(void) {
   /* MSI PLL activation.*/
   RCC->CR |= RCC_CR_MSIPLLEN;
 #endif
+
+  /* Changing MSIRANGE value. Meanwhile range is set by MSISRANGE which is 4MHz.*/
+  RCC->CR |= STM32_MSIRANGE;
+
+  /* Switching from MSISRANGE to MSIRANGE.*/
+  RCC->CR |= RCC_CR_MSIRGSEL;
+  while ((RCC->CR & RCC_CR_MSIRDY) == 0)
+    ;
+
+  /* Updating MSISRANGE value. MSISRANGE can be set only when MSIRGSEL is high. 
+     This range is used exiting the Standby mode until MSIRGSEL is set.*/
+  RCC->CSR |= STM32_MSISRANGE;
 
 #if STM32_ACTIVATE_PLL || STM32_ACTIVATE_PLLSAI1 || STM32_ACTIVATE_PLLSAI2
   /* PLLM and PLLSRC are common to all PLLs.*/

@@ -15,8 +15,8 @@
 */
 
 /**
- * @file    STM32F3xx/adc_lld.h
- * @brief   STM32F3xx ADC subsystem low level driver header.
+ * @file    STM32/LLD/ADCv3/adc_lld.h
+ * @brief   STM32 ADC subsystem low level driver header.
  *
  * @addtogroup ADC
  * @{
@@ -414,8 +414,10 @@
 #endif
 
 /* ISR arrangments checks.*/
+#if STM32_HAS_ADC1 && STM32_HAS_ADC2
 #if STM32_ADC1_NUMBER != STM32_ADC2_NUMBER
 #error "ADCv3 driver expects STM32_ADC1_NUMBER == STM32_ADC2_NUMBER from registry"
+#endif
 #endif
 
 /* ADC IRQ priority tests.*/
@@ -883,6 +885,6 @@ extern "C" {
 
 #endif /* HAL_USE_ADC */
 
-#endif /* _ADC_LLD_H_ */
+#endif /* HAL_ADC_LLD_H */
 
 /** @} */
