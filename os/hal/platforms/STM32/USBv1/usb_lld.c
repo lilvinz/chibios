@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@
 
 #include <string.h>
 
-#include "ch.h"
 #include "hal.h"
 
 #if HAL_USE_USB || defined(__DOXYGEN__)
@@ -112,7 +111,7 @@ static uint32_t usb_pm_alloc(USBDriver *usbp, size_t size) {
 
   next = usbp->pmnext;
   usbp->pmnext += size;
-  chDbgAssert(usbp->pmnext <= USB_PMA_SIZE, "usb_pm_alloc(), #1", "PMA overflow");
+  chDbgAssert(usbp->pmnext <= STM32_USB_PMA_SIZE, "usb_pm_alloc() #1", "PMA overflow");
   return next;
 }
 
@@ -128,7 +127,7 @@ static uint32_t usb_pm_alloc(USBDriver *usbp, size_t size) {
  */
 static void usb_packet_read_to_buffer(stm32_usb_descriptor_t *udp,
                                       uint8_t *buf, size_t n) {
-  uint32_t *pmap= USB_ADDR2PTR(udp->RXADDR0);
+  stm32_usb_pma_t *pmap= USB_ADDR2PTR(udp->RXADDR0);
 
   n = (n + 1) / 2;
   while (n > 0) {
@@ -153,11 +152,11 @@ static void usb_packet_read_to_buffer(stm32_usb_descriptor_t *udp,
 static void usb_packet_read_to_queue(stm32_usb_descriptor_t *udp,
                                      InputQueue *iqp, size_t n) {
   size_t nhw;
-  uint32_t *pmap= USB_ADDR2PTR(udp->RXADDR0);
+  stm32_usb_pma_t *pmap= USB_ADDR2PTR(udp->RXADDR0);
 
   nhw = n / 2;
   while (nhw > 0) {
-    uint32_t w;
+    stm32_usb_pma_t w;
 
     w = *pmap++;
     *iqp->q_wrptr++ = (uint8_t)w;
@@ -177,9 +176,11 @@ static void usb_packet_read_to_queue(stm32_usb_descriptor_t *udp,
 
   /* Updating queue.*/
   chSysLockFromIsr();
+
   iqp->q_counter += n;
   while (notempty(&iqp->q_waiting))
     chSchReadyI(fifo_remove(&iqp->q_waiting))->p_u.rdymsg = Q_OK;
+
   chSysUnlockFromIsr();
 }
 
@@ -196,14 +197,14 @@ static void usb_packet_read_to_queue(stm32_usb_descriptor_t *udp,
 static void usb_packet_write_from_buffer(stm32_usb_descriptor_t *udp,
                                          const uint8_t *buf,
                                          size_t n) {
-  uint32_t *pmap = USB_ADDR2PTR(udp->TXADDR0);
+  stm32_usb_pma_t *pmap = USB_ADDR2PTR(udp->TXADDR0);
 
-  udp->TXCOUNT0 = (uint16_t)n;
+  udp->TXCOUNT0 = (stm32_usb_pma_t)n;
   n = (n + 1) / 2;
   while (n > 0) {
     /* Note, this line relies on the Cortex-M3/M4 ability to perform
        unaligned word accesses.*/
-    *pmap++ = *(uint16_t *)buf;
+    *pmap++ = (stm32_usb_pma_t)*(const uint16_t *)buf;
     buf += 2;
     n--;
   }
@@ -222,17 +223,17 @@ static void usb_packet_write_from_buffer(stm32_usb_descriptor_t *udp,
 static void usb_packet_write_from_queue(stm32_usb_descriptor_t *udp,
                                         OutputQueue *oqp, size_t n) {
   size_t nhw;
-  uint32_t *pmap = USB_ADDR2PTR(udp->TXADDR0);
+  stm32_usb_pma_t *pmap = USB_ADDR2PTR(udp->TXADDR0);
 
-  udp->TXCOUNT0 = (uint16_t)n;
+  udp->TXCOUNT0 = (stm32_usb_pma_t)n;
   nhw = n / 2;
   while (nhw > 0) {
-    uint32_t w;
+    stm32_usb_pma_t w;
 
-    w  = (uint32_t)*oqp->q_rdptr++;
+    w  = (stm32_usb_pma_t)*oqp->q_rdptr++;
     if (oqp->q_rdptr >= oqp->q_top)
       oqp->q_rdptr = oqp->q_buffer;
-    w |= (uint32_t)*oqp->q_rdptr++ << 8;
+    w |= (stm32_usb_pma_t)*oqp->q_rdptr++ << 8;
     if (oqp->q_rdptr >= oqp->q_top)
       oqp->q_rdptr = oqp->q_buffer;
     *pmap++ = w;
@@ -241,7 +242,7 @@ static void usb_packet_write_from_queue(stm32_usb_descriptor_t *udp,
 
   /* Last byte for odd numbers.*/
   if ((n & 1) != 0) {
-    *pmap = (uint32_t)*oqp->q_rdptr++;
+    *pmap = (stm32_usb_pma_t)*oqp->q_rdptr++;
     if (oqp->q_rdptr >= oqp->q_top)
       oqp->q_rdptr = oqp->q_buffer;
   }
@@ -265,9 +266,7 @@ static void usb_packet_write_from_queue(stm32_usb_descriptor_t *udp,
 /*===========================================================================*/
 
 #if STM32_USB_USE_USB1 || defined(__DOXYGEN__)
-#if !defined(STM32_USB1_HP_HANDLER)
-#error "STM32_USB1_HP_HANDLER not defined"
-#endif
+#if STM32_USB1_HP_NUMBER != STM32_USB1_LP_NUMBER
 /**
  * @brief   USB high priority interrupt handler.
  *
@@ -279,10 +278,8 @@ CH_IRQ_HANDLER(STM32_USB1_HP_HANDLER) {
 
   CH_IRQ_EPILOGUE();
 }
+#endif /* STM32_USB1_LP_NUMBER != STM32_USB1_HP_NUMBER */
 
-#if !defined(STM32_USB1_LP_HANDLER)
-#error "STM32_USB1_LP_HANDLER not defined"
-#endif
 /**
  * @brief   USB low priority interrupt handler.
  *
@@ -420,7 +417,7 @@ CH_IRQ_HANDLER(STM32_USB1_LP_HANDLER) {
 
   CH_IRQ_EPILOGUE();
 }
-#endif
+#endif /* STM32_USB_USE_USB1 */
 
 /*===========================================================================*/
 /* Driver exported functions.                                                */
@@ -456,10 +453,12 @@ void usb_lld_start(USBDriver *usbp) {
       STM32_USB->CNTR = CNTR_FRES;
       /* Enabling the USB IRQ vectors, this also gives enough time to allow
          the transceiver power up (1uS).*/
+#if STM32_USB1_HP_NUMBER != STM32_USB1_LP_NUMBER
       nvicEnableVector(STM32_USB1_HP_NUMBER,
-                       CORTEX_PRIORITY_MASK(STM32_USB_USB1_HP_IRQ_PRIORITY));
+              CORTEX_PRIORITY_MASK(STM32_USB_USB1_HP_IRQ_PRIORITY));
+#endif
       nvicEnableVector(STM32_USB1_LP_NUMBER,
-                       CORTEX_PRIORITY_MASK(STM32_USB_USB1_LP_IRQ_PRIORITY));
+              CORTEX_PRIORITY_MASK(STM32_USB_USB1_LP_IRQ_PRIORITY));
       /* Releases the USB reset.*/
       STM32_USB->CNTR = 0;
     }
@@ -483,7 +482,9 @@ void usb_lld_stop(USBDriver *usbp) {
   if (usbp->state == USB_STOP) {
 #if STM32_USB_USE_USB1
     if (&USBD1 == usbp) {
+#if STM32_USB1_HP_NUMBER != STM32_USB1_LP_NUMBER
       nvicDisableVector(STM32_USB1_HP_NUMBER);
+#endif
       nvicDisableVector(STM32_USB1_LP_NUMBER);
       STM32_USB->CNTR = CNTR_PDWN | CNTR_FRES;
       rccDisableUSB(FALSE);
@@ -672,7 +673,7 @@ usbepstatus_t usb_lld_get_status_in(USBDriver *usbp, usbep_t ep) {
  * @notapi
  */
 void usb_lld_read_setup(USBDriver *usbp, usbep_t ep, uint8_t *buf) {
-  uint32_t *pmap;
+  stm32_usb_pma_t *pmap;
   stm32_usb_descriptor_t *udp;
   uint32_t n;
 
