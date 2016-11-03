@@ -25,8 +25,6 @@
 #ifndef _CHPRINTF_H_
 #define _CHPRINTF_H_
 
-#include "hal.h"
-
 #include <stdarg.h>
 
 /**
@@ -40,10 +38,7 @@
 extern "C" {
 #endif
   int chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap);
-  int chvprintft(BaseChannel *chp, systime_t char_timeout, const char *fmt,
-          va_list ap);
   int chprintf(BaseSequentialStream *chp, const char *fmt, ...);
-  int chprintft(BaseChannel *chp, systime_t char_timeout, const char *fmt, ...);
   int chsnprintf(char *str, size_t size, const char *fmt, ...);
 #ifdef __cplusplus
 }
