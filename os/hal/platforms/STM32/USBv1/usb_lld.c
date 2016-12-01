@@ -129,13 +129,18 @@ static void usb_packet_read_to_buffer(stm32_usb_descriptor_t *udp,
                                       uint8_t *buf, size_t n) {
   stm32_usb_pma_t *pmap= USB_ADDR2PTR(udp->RXADDR0);
 
-  n = (n + 1) / 2;
-  while (n > 0) {
-    /* Note, this line relies on the Cortex-M3/M4 ability to perform
-       unaligned word accesses.*/
-    *(uint16_t *)buf = (uint16_t)*pmap++;
-    buf += 2;
-    n--;
+  size_t i = n;
+
+  while (i >= 2) {
+    uint32_t w = *pmap++;
+    *buf++ = (uint8_t) w;
+    *buf++ = (uint8_t) (w >> 8);
+    i -= 2;
+  }
+
+  if (i >= 1)
+  {
+    *buf = (uint8_t) *pmap;
   }
 }
 
@@ -200,13 +205,15 @@ static void usb_packet_write_from_buffer(stm32_usb_descriptor_t *udp,
   stm32_usb_pma_t *pmap = USB_ADDR2PTR(udp->TXADDR0);
 
   udp->TXCOUNT0 = (stm32_usb_pma_t)n;
-  n = (n + 1) / 2;
-  while (n > 0) {
-    /* Note, this line relies on the Cortex-M3/M4 ability to perform
-       unaligned word accesses.*/
-    *pmap++ = (stm32_usb_pma_t)*(const uint16_t *)buf;
-    buf += 2;
-    n--;
+  int32_t i = (int32_t)n;
+
+  while (i > 0) {
+    uint32_t w;
+
+    w  = *buf++;
+    w |= *buf++ << 8;
+    *pmap++ = (stm32_usb_pma_t)w;
+    i -= 2;
   }
 }
 
