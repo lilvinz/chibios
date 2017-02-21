@@ -31,6 +31,31 @@
 /* Driver local definitions.                                                 */
 /*===========================================================================*/
 
+/* For compatibility for those devices without LIN support in the USARTs.*/
+#if !defined(USART_ISR_LBD)
+#define USART_ISR_LBD                       0
+#endif
+
+#if !defined(USART_CR2_LBDIE)
+#define USART_CR2_LBDIE                     0
+#endif
+
+/* STM32L0xx/STM32F7xx ST headers difference.*/
+#if !defined(USART_ISR_LBDF)
+#define USART_ISR_LBDF                      USART_ISR_LBD
+#endif
+
+/* Handling the case where UART4 and UART5 are actually USARTs, this happens
+ * in the STM32F0xx.*/
+#if defined(USART4)
+#define UART4                               USART4
+#endif
+
+#if defined(USART5)
+#define UART5                               USART5
+#endif
+
+
 /*===========================================================================*/
 /* Driver exported variables.                                                */
 /*===========================================================================*/
@@ -158,7 +183,7 @@ static void serve_interrupt(SerialDriver *sdp) {
     set_error(sdp, isr);
 
   /* Special case, LIN break detection.*/
-  if (isr & USART_ISR_LBD) {
+  if (isr & USART_ISR_LBDF) {
     chSysLockFromIsr();
     chnAddFlagsI(sdp, SD_BREAK_DETECTED);
     chSysUnlockFromIsr();
