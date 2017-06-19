@@ -54,7 +54,6 @@
 *  15.11.09  gdisirio   Added read and write handling
 ****************************************************************************/
 
-
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -66,10 +65,9 @@
 #include "hal.h"
 #endif
 
-#if !defined(PORT_ARCHITECTURE_SIMIA32)
-
 /***************************************************************************/
 
+__attribute__((used))
 int _read_r(struct _reent *r, int file, char * ptr, int len)
 {
   (void)r;
@@ -91,6 +89,7 @@ int _read_r(struct _reent *r, int file, char * ptr, int len)
 
 /***************************************************************************/
 
+__attribute__((used))
 int _lseek_r(struct _reent *r, int file, int ptr, int dir)
 {
   (void)r;
@@ -103,6 +102,7 @@ int _lseek_r(struct _reent *r, int file, int ptr, int dir)
 
 /***************************************************************************/
 
+__attribute__((used))
 int _write_r(struct _reent *r, int file, char * ptr, int len)
 {
   (void)r;
@@ -120,6 +120,7 @@ int _write_r(struct _reent *r, int file, char * ptr, int len)
 
 /***************************************************************************/
 
+__attribute__((used))
 int _close_r(struct _reent *r, int file)
 {
   (void)r;
@@ -130,6 +131,7 @@ int _close_r(struct _reent *r, int file)
 
 /***************************************************************************/
 
+__attribute__((used))
 caddr_t _sbrk_r(struct _reent *r, int incr)
 {
 #if CH_CFG_USE_MEMCORE
@@ -152,6 +154,7 @@ caddr_t _sbrk_r(struct _reent *r, int incr)
 
 /***************************************************************************/
 
+__attribute__((used))
 int _fstat_r(struct _reent *r, int file, struct stat * st)
 {
   (void)r;
@@ -164,6 +167,7 @@ int _fstat_r(struct _reent *r, int file, struct stat * st)
 
 /***************************************************************************/
 
+__attribute__((used))
 int _isatty_r(struct _reent *r, int fd)
 {
   (void)r;
@@ -171,14 +175,5 @@ int _isatty_r(struct _reent *r, int fd)
 
   return 1;
 }
-
-/***************************************************************************/
-
-void _tzset_unlocked_r(struct _reent *r)
-{
-  (void)r;
-}
-
-#endif /* PORT_ARCHITECTURE_SIMIA32 */
 
 /*** EOF ***/

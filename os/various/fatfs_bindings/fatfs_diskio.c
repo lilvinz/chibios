@@ -14,9 +14,15 @@
 #endif
 
 #if HAL_USE_MMC_SPI
+extern MMCDriver MMCD1;
 #elif HAL_USE_SDC
+extern SDCDriver SDCD1;
 #else
 #error "MMC_SPI or SDC driver must be specified"
+#endif
+
+#if HAL_USE_RTC
+extern RTCDriver RTCD1;
 #endif
 
 /*-----------------------------------------------------------------------*/

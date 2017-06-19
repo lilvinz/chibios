@@ -469,7 +469,6 @@
 #define rccResetPWRInterface() rccResetAPB1(RCC_APB1RSTR_PWRRST)
 /** @} */
 
-
 /**
  * @name    CAN peripherals specific RCC operations
  * @{
@@ -1552,6 +1551,36 @@
 /** @} */
 
 /**
+ * @name    CRC peripheral specific RCC operations
+ * @{
+ */
+/**
+ * @brief   Enables the CRC peripheral clock.
+ *
+ * @param[in] lp        low power enable flag
+ *
+ * @api
+ */
+#define rccEnableCRC(lp) rccEnableAHB1(RCC_AHB1ENR_CRCEN, lp)
+
+/**
+ * @brief   Disables the CRC peripheral clock.
+ *
+ * @param[in] lp        low power enable flag
+ *
+ * @api
+ */
+#define rccDisableCRC(lp) rccDisableAHB1(RCC_AHB1ENR_CRCEN, lp)
+
+/**
+ * @brief   Resets the CRC peripheral.
+ *
+ * @api
+ */
+#define rccResetCRC() rccResetAHB1(RCC_AHB1RSTR_CRCRST)
+/** @} */
+
+/**
  * @name    FSMC peripherals specific RCC operations
  * @{
  */
@@ -1598,6 +1627,7 @@
 #endif
 #endif
 /** @} */
+
 
 /*===========================================================================*/
 /* External declarations.                                                    */

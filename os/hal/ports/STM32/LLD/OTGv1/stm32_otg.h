@@ -15,7 +15,7 @@
 */
 
 /**
- * @file    stm32_otg.h
+ * @file    OTGv1/stm32_otg.h
  * @brief   STM32 OTG registers layout header.
  *
  * @addtogroup USB
@@ -24,18 +24,6 @@
 
 #ifndef _STM32_OTG_H_
 #define _STM32_OTG_H_
-
-/**
- * @brief   Number of the implemented endpoints in OTG_FS.
- * @details This value does not include the endpoint 0 that is always present.
- */
-#define STM32_OTG1_ENDOPOINTS_NUMBER    3
-
-/**
- * @brief   Number of the implemented endpoints in OTG_HS.
- * @details This value does not include the endpoint 0 that is always present.
- */
-#define STM32_OTG2_ENDOPOINTS_NUMBER    5
 
 /**
  * @brief   OTG_FS FIFO memory size in words.
@@ -429,12 +417,16 @@ typedef struct {
  * @name GCCFG register bit definitions
  * @{
  */
+/* Definitions for stepping 1.*/
 #define GCCFG_NOVBUSSENS        (1U<<21)    /**< VBUS sensing disable.      */
 #define GCCFG_SOFOUTEN          (1U<<20)    /**< SOF output enable.         */
 #define GCCFG_VBUSBSEN          (1U<<19)    /**< Enable the VBUS sensing "B"
                                                  device.                    */
 #define GCCFG_VBUSASEN          (1U<<18)    /**< Enable the VBUS sensing "A"
                                                  device.                    */
+
+/* Definitions for stepping 2.*/
+#define GCCFG_VBDEN             (1U<<21)    /**< VBUS sensing enable.       */
 #define GCCFG_PWRDWN            (1U<<16)    /**< Power down.                */
 /** @} */
 

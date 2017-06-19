@@ -109,7 +109,7 @@ static void cmd_systime(BaseSequentialStream *chp, int argc, char *argv[]) {
 /**
  * @brief   Array of the default commands.
  */
-static ShellCommand local_commands[] = {
+static const ShellCommand local_commands[] = {
   {"info", cmd_info},
   {"systime", cmd_systime},
   {NULL, NULL}
@@ -279,19 +279,14 @@ bool shellGetLine(BaseSequentialStream *chp, char *line, unsigned size) {
     }
     if ((c == 8) || (c == 127)) {
       if (p != line) {
-        chSequentialStreamPut(chp, c);
+        chSequentialStreamPut(chp, 0x08);
         chSequentialStreamPut(chp, 0x20);
-        chSequentialStreamPut(chp, c);
+        chSequentialStreamPut(chp, 0x08);
         p--;
       }
       continue;
     }
-    if (c ==
-#if defined(PORT_ARCHITECTURE_SIMIA32)
-        '\n') {
-#else
-        '\r') {
-#endif
+    if (c == '\r') {
       chprintf(chp, "\r\n");
       *p = 0;
       return false;

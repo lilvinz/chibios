@@ -73,7 +73,7 @@ typedef enum {
   DAC_READY = 2,                    /**< Ready.                             */
   DAC_ACTIVE = 3,                   /**< Exchanging data.                   */
   DAC_COMPLETE = 4,                 /**< Asynchronous operation complete.   */
-  DAC_ERROR = 5 			        /**< Error.                             */
+  DAC_ERROR = 5                     /**< Error.                             */
 } dacstate_t;
 
 #include "dac_lld.h"
@@ -243,14 +243,14 @@ extern "C" {
                       dacchannel_t channel,
                       dacsample_t sample);
   void dacStartConversion(DACDriver *dacp, const DACConversionGroup *grpp,
-                          const dacsample_t *samples, size_t depth);
+                          dacsample_t *samples, size_t depth);
   void dacStartConversionI(DACDriver *dacp, const DACConversionGroup *grpp,
-                           const dacsample_t *samples, size_t depth);
+                           dacsample_t *samples, size_t depth);
   void dacStopConversion(DACDriver *dacp);
   void dacStopConversionI(DACDriver *dacp);
 #if DAC_USE_WAIT
   msg_t dacConvert(DACDriver *dacp, const DACConversionGroup *grpp,
-                   const dacsample_t *samples, size_t depth);
+                   dacsample_t *samples, size_t depth);
 #endif
 #if DAC_USE_MUTUAL_EXCLUSION
   void dacAcquireBus(DACDriver *dacp);

@@ -50,6 +50,8 @@
 #define RTC_DR_DT_OFFSET                    4
 #define RTC_DR_DU_OFFSET                    0
 
+#define RTC_CR_BKP_OFFSET                   18
+
 /*===========================================================================*/
 /* Driver exported variables.                                                */
 /*===========================================================================*/
@@ -343,8 +345,9 @@ void rtc_lld_set_time(RTCDriver *rtcp, const RTCDateTime *timespec) {
 
   /* Writing the registers.*/
   rtc_enter_init();
-  rtcp->rtc->TR = tr;
-  rtcp->rtc->DR = dr;
+  rtcp->rtc->TR  = tr;
+  rtcp->rtc->DR  = dr;
+  rtcp->rtc->CR |= timespec->dstflag << RTC_CR_BKP_OFFSET;
   rtc_exit_init();
 
   /* Leaving a reentrant critical zone.*/
@@ -361,7 +364,7 @@ void rtc_lld_set_time(RTCDriver *rtcp, const RTCDateTime *timespec) {
  * @notapi
  */
 void rtc_lld_get_time(RTCDriver *rtcp, RTCDateTime *timespec) {
-  uint32_t dr, tr;
+  uint32_t dr, tr, cr;
   uint32_t subs;
 #if STM32_RTC_HAS_SUBSECONDS
   uint32_t ssr;
@@ -380,6 +383,7 @@ void rtc_lld_get_time(RTCDriver *rtcp, RTCDateTime *timespec) {
 #endif /* STM32_RTC_HAS_SUBSECONDS */
   tr  = rtcp->rtc->TR;
   dr  = rtcp->rtc->DR;
+  cr  = rtcp->rtc->CR;
   rtcp->rtc->ISR &= ~RTC_ISR_RSF;
 
   /* Leaving a reentrant critical zone.*/
@@ -400,6 +404,9 @@ void rtc_lld_get_time(RTCDriver *rtcp, RTCDateTime *timespec) {
 
   /* Decoding date, this concludes the atomic read sequence.*/
   rtc_decode_date(dr, timespec);
+
+  /* Retrieving the DST bit.*/
+  timespec->dstflag = (cr >> RTC_CR_BKP_OFFSET) & 1;
 }
 
 #if (RTC_ALARMS > 0) || defined(__DOXYGEN__)
@@ -502,16 +509,18 @@ void rtcSTM32SetPeriodicWakeup(RTCDriver *rtcp, const RTCWakeup *wakeupspec) {
     osalDbgCheck(wakeupspec->wutr != 0x30000);
 
     rtcp->rtc->CR &= ~RTC_CR_WUTE;
+    rtcp->rtc->CR &= ~RTC_CR_WUTIE;
     while (!(rtcp->rtc->ISR & RTC_ISR_WUTWF))
       ;
     rtcp->rtc->WUTR = wakeupspec->wutr & 0xFFFF;
-    rtcp->rtc->CR   = (wakeupspec->wutr >> 16) & 0x7;
+    rtcp->rtc->CR &= ~RTC_CR_WUCKSEL;
+    rtcp->rtc->CR |= (wakeupspec->wutr >> 16) & RTC_CR_WUCKSEL;
     rtcp->rtc->CR |= RTC_CR_WUTIE;
     rtcp->rtc->CR |= RTC_CR_WUTE;
   }
   else {
-    rtcp->rtc->CR &= ~RTC_CR_WUTIE;
     rtcp->rtc->CR &= ~RTC_CR_WUTE;
+    rtcp->rtc->CR &= ~RTC_CR_WUTIE;
   }
 
   /* Leaving a reentrant critical zone.*/
