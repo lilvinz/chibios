@@ -410,6 +410,11 @@ static void otg_epout_handler(USBDriver *usbp, usbep_t ep) {
   /* Resets all EP IRQ sources.*/
   otgp->oe[ep].DOEPINT = epint;
 
+  /* Don't process XferCompl interrupt if it is a setup packet. */
+  if (ep == 0 && (epint & (DOEPINT_SETUP_RCVD | DOEPINT_STUP))) {
+    epint &= ~((uint32_t)DOEPINT_XFRC);
+  }
+
   if ((epint & DOEPINT_STUP) && (otgp->DOEPMSK & DOEPMSK_STUPM)) {
     /* Setup packets handling, setup packets are handled using a
        specific callback.*/
