@@ -89,11 +89,11 @@
 /* DAC attributes.*/
 #define STM32_HAS_DAC1_CH1                  TRUE
 #define STM32_DAC1_CH1_DMA_MSK              STM32_DMA_STREAM_ID_MSK(1, 5)
-#define STM32_DAC1_CH1_DMA_CHN              0x00070000
+#define STM32_DAC1_CH1_DMA_CHN              0x00700000
 
 #define STM32_HAS_DAC1_CH2                  TRUE
 #define STM32_DAC1_CH2_DMA_MSK              STM32_DMA_STREAM_ID_MSK(1, 6)
-#define STM32_DAC1_CH2_DMA_CHN              0x00700000
+#define STM32_DAC1_CH2_DMA_CHN              0x07000000
 
 #define STM32_HAS_DAC2_CH1                  FALSE
 #define STM32_HAS_DAC2_CH2                  FALSE
@@ -453,19 +453,22 @@
 #define STM32_HAS_LPUART1                   FALSE
 
 /* USB attributes.*/
-#define STM32_HAS_USB                       FALSE
-
+#define STM32_OTG_STEPPING                  2
 #define STM32_HAS_OTG1                      TRUE
+#define STM32_OTG1_ENDPOINTS                5
 #define STM32_OTG1_HANDLER                  Vector14C
 #define STM32_OTG1_NUMBER                   67
 
 #define STM32_HAS_OTG2                      TRUE
+#define STM32_OTG2_ENDPOINTS                8
 #define STM32_OTG2_HANDLER                  Vector174
 #define STM32_OTG2_EP1OUT_HANDLER           Vector168
 #define STM32_OTG2_EP1IN_HANDLER            Vector16C
 #define STM32_OTG2_NUMBER                   77
 #define STM32_OTG2_EP1OUT_NUMBER            74
 #define STM32_OTG2_EP1IN_NUMBER             75
+
+#define STM32_HAS_USB                       FALSE
 
 /* IWDG attributes.*/
 #define STM32_HAS_IWDG                      TRUE

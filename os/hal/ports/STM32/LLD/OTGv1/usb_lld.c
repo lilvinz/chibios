@@ -38,9 +38,7 @@
 #define EP0_MAX_INSIZE          64
 #define EP0_MAX_OUTSIZE         64
 
-#if defined(STM32F7XX)
-#define GCCFG_INIT_VALUE        GCCFG_PWRDWN
-#else
+#if STM32_OTG_STEPPING == 1
 #if defined(BOARD_OTG_NOVBUSSENS)
 #define GCCFG_INIT_VALUE        (GCCFG_NOVBUSSENS | GCCFG_VBUSASEN |        \
                                  GCCFG_VBUSBSEN | GCCFG_PWRDWN)
@@ -48,6 +46,14 @@
 #define GCCFG_INIT_VALUE        (GCCFG_VBUSASEN | GCCFG_VBUSBSEN |          \
                                  GCCFG_PWRDWN)
 #endif
+
+#elif STM32_OTG_STEPPING == 2
+#if defined(BOARD_OTG_NOVBUSSENS)
+#define GCCFG_INIT_VALUE        GCCFG_PWRDWN
+#else
+#define GCCFG_INIT_VALUE        (GCCFG_VBDEN | GCCFG_PWRDWN)
+#endif
+
 #endif
 
 /*===========================================================================*/
@@ -109,7 +115,7 @@ static const USBEndpointConfig ep0config = {
 static const stm32_otg_params_t fsparams = {
   STM32_USB_OTG1_RX_FIFO_SIZE / 4,
   STM32_OTG1_FIFO_MEM_SIZE,
-  STM32_OTG1_ENDOPOINTS_NUMBER
+  STM32_OTG1_ENDPOINTS
 };
 #endif
 
@@ -117,7 +123,7 @@ static const stm32_otg_params_t fsparams = {
 static const stm32_otg_params_t hsparams = {
   STM32_USB_OTG2_RX_FIFO_SIZE / 4,
   STM32_OTG2_FIFO_MEM_SIZE,
-  STM32_OTG2_ENDOPOINTS_NUMBER
+  STM32_OTG2_ENDPOINTS
 };
 #endif
 
@@ -404,21 +410,33 @@ static void otg_epout_handler(USBDriver *usbp, usbep_t ep) {
   /* Resets all EP IRQ sources.*/
   otgp->oe[ep].DOEPINT = epint;
 
+  /* Don't process XferCompl interrupt if it is a setup packet. */
+  if (ep == 0 && (epint & (DOEPINT_SETUP_RCVD | DOEPINT_STUP))) {
+    epint &= ~((uint32_t)DOEPINT_XFRC);
+  }
+
   if ((epint & DOEPINT_STUP) && (otgp->DOEPMSK & DOEPMSK_STUPM)) {
     /* Setup packets handling, setup packets are handled using a
        specific callback.*/
     _usb_isr_invoke_setup_cb(usbp, ep);
-
   }
   if ((epint & DOEPINT_XFRC) && (otgp->DOEPMSK & DOEPMSK_XFRCM)) {
-    /* Receive transfer complete.*/
-    USBOutEndpointState *osp = usbp->epc[ep]->out_state;
+    USBOutEndpointState *osp;
+
+    /* Receive transfer complete, checking if it is a SETUP transfer on EP0,
+       that it must be ignored, the STUPM handler will take care of it.*/
+    if ((ep == 0) && (usbp->ep0state == USB_EP0_WAITING_SETUP))
+      return;
+
+    /* OUT state structure pointer for this endpoint.*/
+    osp = usbp->epc[ep]->out_state;
 
     /* A short packet always terminates a transaction.*/
-    if (((osp->rxcnt % usbp->epc[ep]->out_maxsize) == 0) &&
+    if ((ep == 0) &&
+        ((osp->rxcnt % usbp->epc[ep]->out_maxsize) == 0) &&
         (osp->rxsize < osp->totsize)) {
-      /* In case the transaction covered only part of the total transfer
-         then another transaction is immediately started in order to
+      /* For EP 0 only, in case the transaction covered only part of the total
+         transfer then another transaction is immediately started in order to
          cover the remaining.*/
       osp->rxsize = osp->totsize - osp->rxsize;
       osp->rxcnt  = 0;
@@ -597,11 +615,25 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
       otg_epin_handler(usbp, 2);
     if (src & (1 << 3))
       otg_epin_handler(usbp, 3);
-#if STM32_USB_USE_OTG2
+#if USB_MAX_ENDPOINTS >= 4
     if (src & (1 << 4))
       otg_epin_handler(usbp, 4);
+#endif
+#if USB_MAX_ENDPOINTS >= 5
     if (src & (1 << 5))
       otg_epin_handler(usbp, 5);
+#endif
+#if USB_MAX_ENDPOINTS >= 6
+    if (src & (1 << 6))
+      otg_epin_handler(usbp, 6);
+#endif
+#if USB_MAX_ENDPOINTS >= 7
+    if (src & (1 << 7))
+      otg_epin_handler(usbp, 7);
+#endif
+#if USB_MAX_ENDPOINTS >= 8
+    if (src & (1 << 8))
+      otg_epin_handler(usbp, 8);
 #endif
   }
   if (sts & GINTSTS_OEPINT) {
@@ -613,11 +645,25 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
       otg_epout_handler(usbp, 2);
     if (src & (1 << 19))
       otg_epout_handler(usbp, 3);
-#if STM32_USB_USE_OTG2
+#if USB_MAX_ENDPOINTS >= 4
     if (src & (1 << 20))
       otg_epout_handler(usbp, 4);
+#endif
+#if USB_MAX_ENDPOINTS >= 5
     if (src & (1 << 21))
       otg_epout_handler(usbp, 5);
+#endif
+#if USB_MAX_ENDPOINTS >= 6
+    if (src & (1 << 22))
+      otg_epout_handler(usbp, 6);
+#endif
+#if USB_MAX_ENDPOINTS >= 7
+    if (src & (1 << 23))
+      otg_epout_handler(usbp, 7);
+#endif
+#if USB_MAX_ENDPOINTS >= 8
+    if (src & (1 << 24))
+      otg_epout_handler(usbp, 8);
 #endif
   }
 }

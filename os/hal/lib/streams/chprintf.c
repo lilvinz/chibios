@@ -393,8 +393,7 @@ int chprintft(BaseChannel *chp, systime_t char_timeout, const char *fmt, ...) {
 
 /**
  * @brief   System formatted output function.
- * @details This function implements a minimal @p vprintf()-like functionality
- *          with output on a @p BaseSequentialStream.
+ * @details This function implements a minimal @p snprintf()-like functionality.
  *          The general parameters format is: %[-][width|*][.precision|*][l|L]p.
  *          The following parameter types (p) are supported:
  *          - <b>x</b> hexadecimal integer.

@@ -824,12 +824,12 @@ void gpt_lld_start_timer(GPTDriver *gptp, gptcnt_t interval) {
   gptp->tim->CNT   = 0;                         /* Reset counter.           */
 
   /* NOTE: After generating the UG event it takes several clock cycles before
-     SR bit 0 goes to 1. This is because the clearing of CNT has been inserted
+     SR bit 0 goes to 1. This is why the clearing of CNT has been inserted
      before the clearing of SR, to give it some time.*/
   gptp->tim->SR    = 0;                         /* Clear pending IRQs.      */
   if (NULL != gptp->config->callback)
     gptp->tim->DIER |= STM32_TIM_DIER_UIE;      /* Update Event IRQ enabled.*/
-  gptp->tim->CR1   = STM32_TIM_CR1_URS | STM32_TIM_CR1_CEN;
+  gptp->tim->CR1 = STM32_TIM_CR1_ARPE | STM32_TIM_CR1_URS | STM32_TIM_CR1_CEN;
 }
 
 /**
@@ -863,6 +863,7 @@ void gpt_lld_polled_delay(GPTDriver *gptp, gptcnt_t interval) {
 
   gptp->tim->ARR  = (uint32_t)(interval - 1);   /* Time constant.           */
   gptp->tim->EGR  = STM32_TIM_EGR_UG;           /* Update event.            */
+  gptp->tim->SR   = 0;                          /* Clear pending IRQs.      */
   gptp->tim->CR1  = STM32_TIM_CR1_OPM | STM32_TIM_CR1_URS | STM32_TIM_CR1_CEN;
   while (!(gptp->tim->SR & STM32_TIM_SR_UIF))
     ;

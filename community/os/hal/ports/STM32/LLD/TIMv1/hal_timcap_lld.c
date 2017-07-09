@@ -24,14 +24,13 @@
 
 
 /**
- * @file    STM32/timcap_lld.c
+ * @file    STM32/hal_timcap_lld.c
  * @brief   STM32 TIMCAP subsystem low level driver header.
  *
  * @addtogroup TIMCAP
  * @{
  */
 
-#include "ch.h"
 #include "hal.h"
 
 #if HAL_USE_TIMCAP || defined(__DOXYGEN__)

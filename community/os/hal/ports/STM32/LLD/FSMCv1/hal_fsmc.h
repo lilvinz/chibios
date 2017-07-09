@@ -15,15 +15,15 @@
 */
 
 /**
- * @file    fsmc.h
+ * @file    hal_fsmc.h
  * @brief   FSMC Driver subsystem low level driver header.
  *
  * @addtogroup FSMC
  * @{
  */
 
-#ifndef _FSMC_H_
-#define _FSMC_H_
+#ifndef HAL_FSMC_H_
+#define HAL_FSMC_H_
 
 #if (HAL_USE_FSMC == TRUE) || defined(__DOXYGEN__)
 
@@ -38,7 +38,7 @@
      defined(STM32F429xx) || defined(STM32F439xx) || \
      defined(STM32L471xx) || defined(STM32L475xx) || \
      defined(STM32L476xx) || defined(STM32L485xx) || \
-     defined(STM32L486xx))
+     defined(STM32L486xx) || defined(STM32F7))
   #if !defined(FSMC_Bank1_R_BASE)
   #define FSMC_Bank1_R_BASE               (FMC_R_BASE + 0x0000)
   #endif
@@ -83,7 +83,8 @@
 #define FSMC_Bank3_MAP_BASE               ((uint32_t) 0x80000000)
 #define FSMC_Bank4_MAP_BASE               ((uint32_t) 0x90000000)
 #if (defined(STM32F427xx) || defined(STM32F437xx) || \
-     defined(STM32F429xx) || defined(STM32F439xx))
+     defined(STM32F429xx) || defined(STM32F439xx) || \
+     defined(STM32F7))
   #define FSMC_Bank5_MAP_BASE             ((uint32_t) 0xC0000000)
   #define FSMC_Bank6_MAP_BASE             ((uint32_t) 0xD0000000)
 #endif
@@ -160,7 +161,8 @@ typedef struct {
 } FSMC_SRAM_NOR_TypeDef;
 
 #if (defined(STM32F427xx) || defined(STM32F437xx) || \
-     defined(STM32F429xx) || defined(STM32F439xx))
+     defined(STM32F429xx) || defined(STM32F439xx) || \
+     defined(STM32F7))
 
 typedef struct {
   __IO uint32_t SDCR1;              /**< SDRAM control register (bank 1) */
@@ -177,10 +179,15 @@ typedef struct {
 /**
  * @brief   PCR register
  */
-#define  FSMC_PCR_PWAITEN         ((uint32_t)0x00000002)
-#define  FSMC_PCR_PBKEN           ((uint32_t)0x00000004)
-#define  FSMC_PCR_PTYP            ((uint32_t)0x00000008)
-#define  FSMC_PCR_ECCEN           ((uint32_t)0x00000040)
+#define  FSMC_PCR_PWAITEN         ((uint32_t)1 << 1)
+#define  FSMC_PCR_PBKEN           ((uint32_t)1 << 2)
+#define  FSMC_PCR_PTYP            ((uint32_t)1 << 3)
+#define  FSMC_PCR_PWID_8          ((uint32_t)0 << 4)
+#define  FSMC_PCR_PWID_16         ((uint32_t)1 << 4)
+#define  FSMC_PCR_PWID_RESERVED1  ((uint32_t)2 << 4)
+#define  FSMC_PCR_PWID_RESERVED2  ((uint32_t)3 << 4)
+#define  FSMC_PCR_PWID_MASK       ((uint32_t)3 << 4)
+#define  FSMC_PCR_ECCEN           ((uint32_t)1 << 6)
 #define  FSMC_PCR_PTYP_PCCARD     0
 #define  FSMC_PCR_PTYP_NAND       FSMC_PCR_PTYP
 
@@ -208,7 +215,8 @@ typedef struct {
 #define  FSMC_BCR_MWID_8          ((uint32_t)0 << 4)
 #define  FSMC_BCR_MWID_16         ((uint32_t)1 << 4)
 #if (defined(STM32F427xx) || defined(STM32F437xx) || \
-     defined(STM32F429xx) || defined(STM32F439xx))
+     defined(STM32F429xx) || defined(STM32F439xx) || \
+     defined(STM32F7))
 #define  FSMC_BCR_MWID_32         ((uint32_t)2 << 4)
 #else
 #define  FSMC_BCR_MWID_RESERVED1  ((uint32_t)2 << 4)
@@ -224,6 +232,14 @@ typedef struct {
 #define  FSMC_BCR_EXTMOD          ((uint32_t)1 << 14)
 #define  FSMC_BCR_ASYNCWAIT       ((uint32_t)1 << 15)
 #define  FSMC_BCR_CBURSTRW        ((uint32_t)1 << 19)
+#if (defined(STM32F427xx) || defined(STM32F437xx) || \
+     defined(STM32F429xx) || defined(STM32F439xx) || \
+     defined(STM32F7))
+#define  FSMC_BCR_CCLKEN          ((uint32_t)1 << 20)
+#endif
+#if (defined(STM32F7))
+#define FSMC_BCR_WFDIS            ((uint32_t)1 << 21)
+#endif
 
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
@@ -239,15 +255,6 @@ typedef struct {
  */
 #if !defined(STM32_FSMC_USE_FSMC1) || defined(__DOXYGEN__)
 #define STM32_FSMC_USE_FSMC1             FALSE
-#endif
-
-/**
- * @brief   Internal FSMC interrupt enable switch
- * @details MCUs in 100-pin package has no dedicated interrupt pin for FSMC.
- *          You have to use EXTI module instead to workaround this issue.
- */
-#if !defined(STM32_NAND_USE_EXT_INT) || defined(__DOXYGEN__)
-#define STM32_NAND_USE_EXT_INT          FALSE
 #endif
 
 /** @} */
@@ -306,7 +313,8 @@ struct FSMCDriver {
   FSMC_NAND_TypeDef         *nand2;
 #endif
 #if (defined(STM32F427xx) || defined(STM32F437xx) || \
-     defined(STM32F429xx) || defined(STM32F439xx))
+     defined(STM32F429xx) || defined(STM32F439xx) || \
+     defined(STM32F7))
   #if STM32_USE_FSMC_SDRAM
     FSMC_SDRAM_TypeDef       *sdram;
   #endif
@@ -337,6 +345,6 @@ extern "C" {
 
 #endif /* HAL_USE_FSMC */
 
-#endif /* _FSMC_H_ */
+#endif /* HAL_FSMC_H_ */
 
 /** @} */
