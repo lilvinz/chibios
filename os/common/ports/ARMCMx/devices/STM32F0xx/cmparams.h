@@ -65,7 +65,7 @@
  */
 #if defined(STM32F030x6) || defined(STM32F031x6) || defined(STM32F038xx)
 #define CORTEX_NUM_VECTORS      28
-#if defined(STM32F030x8)
+#elif defined(STM32F030x8)
 #define CORTEX_NUM_VECTORS      29
 #elif defined(STM32F030xC)
 #define CORTEX_NUM_VECTORS      30
