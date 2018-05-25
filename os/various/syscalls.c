@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -54,7 +54,6 @@
 *  15.11.09  gdisirio   Added read and write handling
 ****************************************************************************/
 
-
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -65,8 +64,6 @@
 #if defined(STDOUT_SD) || defined(STDIN_SD)
 #include "hal.h"
 #endif
-
-#if !defined(PORT_ARCHITECTURE_SIMIA32)
 
 /***************************************************************************/
 
@@ -178,14 +175,5 @@ int _isatty_r(struct _reent *r, int fd)
 
   return 1;
 }
-
-/***************************************************************************/
-
-void _tzset_unlocked_r(struct _reent *r)
-{
-  (void)r;
-}
-
-#endif /* PORT_ARCHITECTURE_SIMIA32 */
 
 /*** EOF ***/
