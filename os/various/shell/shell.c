@@ -528,7 +528,12 @@ bool shellGetLine(ShellConfig *scfg, char *line, unsigned size, ShellHistory *sh
       }
       continue;
     }
-    if (c == '\r') {
+    if (c ==
+#if defined(PORT_ARCHITECTURE_SIMIA32)
+        '\n') {
+#else
+        '\r') {
+#endif
       chprintf(chp, SHELL_NEWLINE_STR);
 #if SHELL_USE_HISTORY == TRUE
       save_history(shp, line, p - line);
