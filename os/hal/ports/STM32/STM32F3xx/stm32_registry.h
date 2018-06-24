@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@
  * @{
  */
 
-#ifndef _STM32_REGISTRY_H_
-#define _STM32_REGISTRY_H_
+#ifndef STM32_REGISTRY_H
+#define STM32_REGISTRY_H
 
 /**
  * @brief   Sub-family identifier.
@@ -82,6 +82,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -163,6 +164,9 @@
 
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -340,6 +344,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -428,6 +433,9 @@
 
 #define STM32_HAS_I2C4                      FALSE
 
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
+
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
 #define STM32_RTC_HAS_SUBSECONDS            TRUE
@@ -509,7 +517,7 @@
 
 #define STM32_HAS_TIM20                     TRUE
 #define STM32_TIM20_IS_32BITS               FALSE
-#define STM32_TIM20_CHANNELS                4
+#define STM32_TIM20_CHANNELS                6
 
 #define STM32_HAS_TIM5                      FALSE
 #define STM32_HAS_TIM9                      FALSE
@@ -600,6 +608,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -670,6 +679,9 @@
 #define STM32_HAS_I2C2                      FALSE
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -811,6 +823,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      FALSE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -883,6 +896,9 @@
 #define STM32_I2C_I2C3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 1)
 
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -1021,6 +1037,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -1093,6 +1110,9 @@
 #define STM32_I2C_I2C3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 1)
 
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -1240,6 +1260,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -1320,6 +1341,9 @@
 
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -1481,6 +1505,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -1566,6 +1591,9 @@
 #define STM32_I2C_I2C3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 1)
 
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -1725,6 +1753,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -1796,6 +1825,9 @@
 #define STM32_I2C_I2C3_TX_DMA_STREAM        STM32_DMA_STREAM_ID(1, 1)
 
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -1940,6 +1972,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -2010,6 +2043,9 @@
 #define STM32_HAS_I2C2                      FALSE
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -2154,6 +2190,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -2236,6 +2273,9 @@
 
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -2383,8 +2423,8 @@
 #define STM32_HAS_ADC2                      TRUE
 #define STM32_ADC2_HANDLER                  Vector88
 #define STM32_ADC2_NUMBER                   18
-#define STM32_ADC2_DMA_MSK                  (STM32_DMA_STREAM_ID_MSK(2, 1) |\
-                                             STM32_DMA_STREAM_ID_MSK(2, 3))
+#define STM32_ADC2_DMA_MSK                  (STM32_DMA_STREAM_ID_MSK(1, 2) |\
+                                             STM32_DMA_STREAM_ID_MSK(1, 4))
 #define STM32_ADC2_DMA_CHN                  0x00000000
 
 #define STM32_HAS_ADC3                      FALSE
@@ -2397,6 +2437,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -2467,6 +2508,9 @@
 #define STM32_HAS_I2C2                      FALSE
 #define STM32_HAS_I2C3                      FALSE
 #define STM32_HAS_I2C4                      FALSE
+
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
 
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
@@ -2539,6 +2583,9 @@
 #define STM32_HAS_TIM20                     FALSE
 #define STM32_HAS_TIM21                     FALSE
 #define STM32_HAS_TIM22                     FALSE
+
+/* HRTIM attributes.*/
+#define STM32_HAS_HRTIM1                    TRUE
 
 /* USART attributes.*/
 #define STM32_HAS_USART1                    TRUE
@@ -2621,6 +2668,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_CAN1                      TRUE
 #define STM32_HAS_CAN2                      FALSE
+#define STM32_HAS_CAN3                      FALSE
 #define STM32_CAN_MAX_FILTERS               14
 
 /* DAC attributes.*/
@@ -2709,6 +2757,9 @@
 
 #define STM32_HAS_I2C4                      FALSE
 
+/* QUADSPI attributes.*/
+#define STM32_HAS_QUADSPI1                  FALSE
+
 /* RTC attributes.*/
 #define STM32_HAS_RTC                       TRUE
 #define STM32_RTC_HAS_SUBSECONDS            TRUE
@@ -2790,7 +2841,7 @@
 
 #define STM32_HAS_TIM20                     TRUE
 #define STM32_TIM20_IS_32BITS               FALSE
-#define STM32_TIM20_CHANNELS                4
+#define STM32_TIM20_CHANNELS                6
 
 #define STM32_HAS_TIM5                      FALSE
 #define STM32_HAS_TIM9                      FALSE
@@ -2854,6 +2905,6 @@
 
 /** @} */
 
-#endif /* _STM32_REGISTRY_H_ */
+#endif /* STM32_REGISTRY_H */
 
 /** @} */

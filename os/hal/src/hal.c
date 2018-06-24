@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -62,13 +62,20 @@ void halInit(void) {
   hal_lld_init();
 
 #if (HAL_USE_PAL == TRUE) || defined(__DOXYGEN__)
+#if defined(PAL_NEW_INIT)
+  palInit();
+#else
   palInit(&pal_default_config);
+#endif
 #endif
 #if (HAL_USE_ADC == TRUE) || defined(__DOXYGEN__)
   adcInit();
 #endif
 #if (HAL_USE_CAN == TRUE) || defined(__DOXYGEN__)
   canInit();
+#endif
+#if (HAL_USE_CRY == TRUE) || defined(__DOXYGEN__)
+  cryInit();
 #endif
 #if (HAL_USE_DAC == TRUE) || defined(__DOXYGEN__)
   dacInit();
@@ -93,6 +100,9 @@ void halInit(void) {
 #endif
 #if (HAL_USE_PWM == TRUE) || defined(__DOXYGEN__)
   pwmInit();
+#endif
+#if (HAL_USE_QSPI == TRUE) || defined(__DOXYGEN__)
+  qspiInit();
 #endif
 #if (HAL_USE_SERIAL == TRUE) || defined(__DOXYGEN__)
   sdInit();

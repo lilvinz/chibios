@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2006..2015 Giovanni Di Sirio
+    ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -148,7 +148,7 @@ int chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap)
  *
  * @api
  */
-int chvprintft(BaseChannel *chp, systime_t char_timeout, const char *fmt,
+int chvprintft(BaseChannel *chp, sysinterval_t char_timeout, const char *fmt,
         va_list ap) {
   char *p, *s, c, filler;
   int i, precision, width;
@@ -380,7 +380,7 @@ int chprintf(BaseSequentialStream *chp, const char *fmt, ...) {
  *
  * @api
  */
-int chprintft(BaseChannel *chp, systime_t char_timeout, const char *fmt, ...) {
+int chprintft(BaseChannel *chp, sysinterval_t char_timeout, const char *fmt, ...) {
   va_list ap;
   int formatted_bytes;
 
