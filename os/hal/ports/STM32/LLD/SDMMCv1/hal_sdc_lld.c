@@ -528,7 +528,7 @@ void sdc_lld_stop(SDCDriver *sdcp) {
 void sdc_lld_start_clk(SDCDriver *sdcp) {
 
   /* Initial clock setting: 400kHz, 1bit mode.*/
-  sdcp->sdmmc->CLKCR  = SDMMC_CLKDIV_LS;
+  sdcp->sdmmc->CLKCR  = SDMMC_CLKCR_HWFC_EN | SDMMC_CLKDIV_LS;
   sdcp->sdmmc->POWER |= SDMMC_POWER_PWRCTRL_0 | SDMMC_POWER_PWRCTRL_1;
   sdcp->sdmmc->CLKCR |= SDMMC_CLKCR_CLKEN;
 
