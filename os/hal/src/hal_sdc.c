@@ -672,8 +672,7 @@ bool sdcConnect(SDCDriver *sdcp) {
   }
 
   /* Selects the card for operations.*/
-  if (sdc_lld_send_cmd_short_crc(sdcp, MMCSD_CMD_SEL_DESEL_CARD,
-                                 sdcp->rca, resp)) {
+  if (sdcSelect(sdcp) != HAL_SUCCESS) {
     goto failed;
   }
 
@@ -737,12 +736,18 @@ bool sdcConnect(SDCDriver *sdcp) {
     goto failed;
   }
 
+  /* Deselects the card for operations.*/
+  if (sdcDeselect(sdcp) != HAL_SUCCESS) {
+    goto failed;
+  }
+
   /* Initialization complete.*/
   sdcp->state = BLK_READY;
   return HAL_SUCCESS;
 
   /* Connection failed, state reset to BLK_ACTIVE.*/
 failed:
+  sdc_lld_send_cmd_short_crc(sdcp, MMCSD_CMD_SEL_DESEL_CARD, 0, resp);
   sdc_lld_stop_clk(sdcp);
   sdcp->state = BLK_ACTIVE;
   return HAL_FAILED;
@@ -783,6 +788,126 @@ bool sdcDisconnect(SDCDriver *sdcp) {
   /* Card clock stopped.*/
   sdc_lld_stop_clk(sdcp);
   sdcp->state = BLK_ACTIVE;
+  return HAL_SUCCESS;
+}
+
+/**
+ * @brief   Selects card for operation (standby to transfer state).
+ *
+ * @param[in] sdcp      pointer to the @p SDCDriver object
+ *
+ * @return              The operation status.
+ * @retval HAL_SUCCESS  operation succeeded.
+ * @retval HAL_FAILED   operation failed.
+ *
+ * @api
+ */
+bool sdcSelect(SDCDriver *sdcp) {
+  uint32_t resp[1];
+
+  osalDbgCheck(sdcp != NULL);
+  osalDbgAssert((sdcp->state == BLK_ACTIVE) || (sdcp->state == BLK_READY),
+                "invalid state");
+
+  /* Selects the card for operations.*/
+  if (sdc_lld_send_cmd_short_crc(sdcp, MMCSD_CMD_SEL_DESEL_CARD,
+                                 sdcp->rca, resp)) {
+
+    return HAL_FAILED;
+  }
+
+  return HAL_SUCCESS;
+}
+
+/**
+ * @brief   Unselects card for operation (transfer to standby state).
+ *
+ * @param[in] sdcp      pointer to the @p SDCDriver object
+ *
+ * @return              The operation status.
+ * @retval HAL_SUCCESS  operation succeeded.
+ * @retval HAL_FAILED   operation failed.
+ *
+ * @api
+ */
+bool sdcDeselect(SDCDriver *sdcp) {
+  uint32_t resp[1];
+
+  osalDbgCheck(sdcp != NULL);
+  osalDbgAssert((sdcp->state == BLK_ACTIVE) || (sdcp->state == BLK_READY),
+                "invalid state");
+
+  /* Deselects the card for operations.*/
+  if (sdc_lld_send_cmd_short_crc(sdcp, MMCSD_CMD_SEL_DESEL_CARD,
+                                 0, resp)) {
+
+    return HAL_FAILED;
+  }
+
+  return HAL_SUCCESS;
+}
+
+/**
+ * @brief   Puts device from standby into sleep mode.
+ * @details The timeout for state transitions between Standby state
+ *          and Sleep state is defined in the EXT_CSD register S_A_timeout.
+ *          The maximum current consumptions during the Sleep state
+ *          are defined in the EXT_CSD registers S_A_VCC and S_A_VCCQ.
+ *
+ * @param[in] sdcp      pointer to the @p SDCDriver object
+ *
+ * @return              The operation status.
+ * @retval HAL_SUCCESS  operation succeeded.
+ * @retval HAL_FAILED   operation failed.
+ *
+ * @api
+ */
+bool sdcSleep(SDCDriver *sdcp) {
+  uint32_t resp[1];
+
+  osalDbgCheck(sdcp != NULL);
+  osalDbgAssert((sdcp->state == BLK_ACTIVE) || (sdcp->state == BLK_READY),
+                "invalid state");
+
+  /* Enters sleep mode from standby mode. */
+  if (sdc_lld_send_cmd_short_crc(sdcp, MMCSD_CMD_SLEEP_AWAKE,
+                                 sdcp->rca | (1 << 15), resp)) {
+
+    return HAL_FAILED;
+  }
+
+  return HAL_SUCCESS;
+}
+
+/**
+ * @brief   Wakes the device from sleep mode.
+ * @details The timeout for state transitions between Standby state
+ *          and Sleep state is defined in the EXT_CSD register S_A_timeout.
+ *          The maximum current consumptions during the Sleep state
+ *          are defined in the EXT_CSD registers S_A_VCC and S_A_VCCQ.
+ *
+ * @param[in] sdcp      pointer to the @p SDCDriver object
+ *
+ * @return              The operation status.
+ * @retval HAL_SUCCESS  operation succeeded.
+ * @retval HAL_FAILED   operation failed.
+ *
+ * @api
+ */
+bool sdcUnsleep(SDCDriver *sdcp) {
+  uint32_t resp[1];
+
+  osalDbgCheck(sdcp != NULL);
+  osalDbgAssert((sdcp->state == BLK_ACTIVE) || (sdcp->state == BLK_READY),
+                "invalid state");
+
+  /* Enters standby mode from sleep mode. */
+  if (sdc_lld_send_cmd_short_crc(sdcp, MMCSD_CMD_SLEEP_AWAKE,
+                                 sdcp->rca | (0 << 15), resp)) {
+
+    return HAL_FAILED;
+  }
+
   return HAL_SUCCESS;
 }
 
